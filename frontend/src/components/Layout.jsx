@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const NAV_ITEMS = [
   { label: 'Recipes', path: '/recipes', icon: '📋' },
+  { label: 'Menu Planner', path: '/menu-planner', icon: '📅' },
 ];
 
 export default function Layout() {

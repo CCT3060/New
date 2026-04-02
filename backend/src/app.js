@@ -13,6 +13,7 @@ const authRoutes = require('./modules/auth/auth.routes');
 const recipeRoutes = require('./modules/recipe/recipe.routes');
 const inventoryRoutes = require('./modules/inventory/inventory.routes');
 const auditRoutes = require('./modules/audit/audit.routes');
+const menuPlannerRoutes = require('./modules/menu-planner/menu-planner.routes');
 
 const app = express();
 
@@ -78,6 +79,7 @@ app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/menu-plans', menuPlannerRoutes);
 
 // ── 404 Handler ────────────────────────────────
 app.use((req, res) => {

@@ -55,6 +55,7 @@ a:hover { text-decoration: underline; }
 .app-layout { display: flex; min-height: 100vh; }
 .main-content { flex: 1; margin-left: var(--sidebar-width); min-height: 100vh; }
 .page-content { padding: 24px; max-width: 1400px; }
+.page-content--full { padding: 0; max-width: none; }
 
 /* ── Page Header ─────────────────────────────── */
 .page-header { margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }

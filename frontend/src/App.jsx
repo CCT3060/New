@@ -11,6 +11,7 @@ import MenuPlanListPage from './modules/menu-planner/pages/MenuPlanListPage';
 import MenuPlanCreatePage from './modules/menu-planner/pages/MenuPlanCreatePage';
 import MenuPlanEditPage from './modules/menu-planner/pages/MenuPlanEditPage';
 import MenuPlanDetailPage from './modules/menu-planner/pages/MenuPlanDetailPage';
+import MenuPlanCalendarPage from './modules/menu-planner/pages/MenuPlanCalendarPage';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -38,7 +39,8 @@ export default function App() {
           <Route path="recipes/:id" element={<RecipeDetailPage />} />
           <Route path="recipes/:id/edit" element={<RecipeEditPage />} />
           <Route path="recipes/:id/versions" element={<RecipeVersionsPage />} />
-          <Route path="menu-planner" element={<MenuPlanListPage />} />
+          <Route path="menu-planner" element={<MenuPlanCalendarPage />} />
+          <Route path="menu-planner/list" element={<MenuPlanListPage />} />
           <Route path="menu-planner/new" element={<MenuPlanCreatePage />} />
           <Route path="menu-planner/:id" element={<MenuPlanDetailPage />} />
           <Route path="menu-planner/:id/edit" element={<MenuPlanEditPage />} />

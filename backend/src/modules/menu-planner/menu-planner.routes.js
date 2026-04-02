@@ -4,6 +4,10 @@ const { authenticate } = require('../../middleware/auth.middleware');
 
 router.use(authenticate);
 
+// Calendar actions (before /:id to avoid conflicts)
+router.post('/calendar/drop', c.dropRecipeOnSlot);
+router.post('/calendar/move', c.moveItemBetweenSlots);
+
 router.get('/', c.listMenuPlans);
 router.post('/', c.createMenuPlan);
 router.get('/:id', c.getMenuPlan);

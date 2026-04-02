@@ -68,6 +68,15 @@ export const menuPlanApi = {
     const res = await api.delete(`/menu-plans/${id}/items/${itemId}`);
     return res.data ?? res;
   },
+  // Calendar-specific endpoints
+  dropOnSlot: async (data) => {
+    const res = await api.post('/menu-plans/calendar/drop', data);
+    return res.data ?? res;
+  },
+  moveItem: async (data) => {
+    const res = await api.post('/menu-plans/calendar/move', data);
+    return res.data ?? res;
+  },
 };
 
 export const recipePickerApi = {

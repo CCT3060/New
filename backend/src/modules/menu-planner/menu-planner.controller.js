@@ -1,7 +1,6 @@
 const menuPlannerService = require('./menu-planner.service');
 const { success, created, notFound, forbidden } = require('../../utils/response');
 const { getPaginationParams, buildPaginationMeta, getSortParams } = require('../../utils/pagination');
-
 const listMenuPlans = async (req, res, next) => {
   try {
     const { page, limit, skip } = getPaginationParams(req.query);
@@ -77,4 +76,34 @@ module.exports = {
   addItem,
   updateItem,
   removeItem,
+  dropRecipeOnSlot,
+  moveItemBetweenSlots,
 };
+
+async function dropRecipeOnSlot(req, res, next) {
+  try {
+    const { planDate, mealType, warehouseId, recipeId, servings } = req.body;
+    if (!planDate || !mealType || !warehouseId || !recipeId) {
+      return res.status(400).json({ success: false, message: 'planDate, mealType, warehouseId and recipeId are required' });
+    }
+    const result = await menuPlannerService.dropRecipeOnSlot(
+      { planDate, mealType, warehouseId, recipeId, servings },
+      req.user.id
+    );
+    return created(res, result, result.alreadyExists ? 'Recipe already in this slot' : 'Recipe added to slot');
+  } catch (err) { next(err); }
+}
+
+async function moveItemBetweenSlots(req, res, next) {
+  try {
+    const { itemId, sourcePlanId, targetDate, targetMealType, warehouseId } = req.body;
+    if (!itemId || !sourcePlanId || !targetDate || !targetMealType || !warehouseId) {
+      return res.status(400).json({ success: false, message: 'itemId, sourcePlanId, targetDate, targetMealType and warehouseId are required' });
+    }
+    await menuPlannerService.moveItemBetweenSlots(
+      { itemId, sourcePlanId, targetDate, targetMealType, warehouseId },
+      req.user.id
+    );
+    return success(res, {}, 'Recipe moved successfully');
+  } catch (err) { next(err); }
+}

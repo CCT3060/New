@@ -77,7 +77,7 @@ export default function Layout() {
           </div>
         </header>
 
-        <div className="page-content">
+        <div className={`page-content${location.pathname === '/menu-planner' ? ' page-content--full' : ''}`}>
           <Outlet />
         </div>
       </div>

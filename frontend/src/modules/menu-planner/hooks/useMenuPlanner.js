@@ -6,6 +6,7 @@ export const MENU_PLAN_KEYS = {
   all: ['menu-plans'],
   list: (filters) => ['menu-plans', 'list', filters],
   detail: (id) => ['menu-plans', 'detail', id],
+  week: (from, to, warehouseId) => ['menu-plans', 'week', from, to, warehouseId],
   recipeLookup: (filters) => ['recipes', 'lookup', filters],
 };
 
@@ -96,7 +97,49 @@ export const useUpdateMenuPlanItem = (menuPlanId) => {
   return useMutation({
     mutationFn: ({ itemId, data }) => menuPlanApi.updateItem(menuPlanId, itemId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: MENU_PLAN_KEYS.detail(menuPlanId) });
+      queryClient.invalidateQueries({ queryKey: MENU_PLAN_KEYS.all });
+    },
+    onError: (err) => toast.error(err.message),
+  });
+};
+
+// ─── Calendar / Weekly Query ────────────────────────────────────────────────
+export const useWeekMenuPlans = (planDateFrom, planDateTo, warehouseId) =>
+  useQuery({
+    queryKey: MENU_PLAN_KEYS.week(planDateFrom, planDateTo, warehouseId),
+    queryFn: () => menuPlanApi.list({ planDateFrom, planDateTo, warehouseId, limit: 200 }),
+    enabled: !!planDateFrom && !!planDateTo,
+    keepPreviousData: true,
+  });
+
+export const useDropOnSlot = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => menuPlanApi.dropOnSlot(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: MENU_PLAN_KEYS.all });
+    },
+    onError: (err) => toast.error(err.message),
+  });
+};
+
+export const useMoveItem = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => menuPlanApi.moveItem(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: MENU_PLAN_KEYS.all });
+    },
+    onError: (err) => toast.error(err.message),
+  });
+};
+
+export const useDeleteMenuPlanItem = (menuPlanId) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (itemId) => menuPlanApi.removeItem(menuPlanId, itemId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: MENU_PLAN_KEYS.all });
     },
     onError: (err) => toast.error(err.message),
   });

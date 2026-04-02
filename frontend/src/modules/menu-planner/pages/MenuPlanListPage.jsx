@@ -46,9 +46,12 @@ export default function MenuPlanListPage() {
           </p>
         </div>
         {canManage && (
-          <button className="btn btn-primary" onClick={() => navigate('/menu-planner/new')}>
-            + New Menu Plan
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="btn btn-outline" onClick={() => navigate('/menu-planner')}>📅 Calendar View</button>
+            <button className="btn btn-primary" onClick={() => navigate('/menu-planner/new')}>
+              + New Menu Plan
+            </button>
+          </div>
         )}
       </div>
 

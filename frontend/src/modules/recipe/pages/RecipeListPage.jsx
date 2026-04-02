@@ -1,5 +1,5 @@
-﻿/**
- * RecipeListPage â€” Professional card-grid recipe browser.
+/**
+ * RecipeListPage - Professional card-grid recipe browser.
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,18 +12,18 @@ const CATEGORIES = ['VEG', 'NON_VEG', 'VEGAN', 'EGG'];
 const STATUSES = ['DRAFT', 'UNDER_REVIEW', 'APPROVED', 'ACTIVE', 'INACTIVE', 'ARCHIVED'];
 
 const MEAL_ICONS = {
-  BREAKFAST: 'ðŸŒ…', LUNCH: 'â˜€ï¸', DINNER: 'ðŸŒ™',
-  SNACK: 'ðŸ¿', DESSERT: 'ðŸ°', BEVERAGE: 'â˜•',
+  BREAKFAST: 'Breakfast', LUNCH: 'Lunch', DINNER: 'Dinner',
+  SNACK: 'Snack', DESSERT: 'Dessert', BEVERAGE: 'Beverage',
 };
 const FOOD_COLORS = {
   VEG: '#16a34a', NON_VEG: '#dc2626', VEGAN: '#7c3aed', EGG: '#d97706',
 };
-const FOOD_ICONS = { VEG: 'ðŸ¥¦', NON_VEG: 'ðŸ—', VEGAN: 'ðŸŒ±', EGG: 'ðŸ¥š' };
+const FOOD_ICONS = { VEG: 'VEG', NON_VEG: 'NON VEG', VEGAN: 'VEGAN', EGG: 'EGG' };
 
 const fmtCurrency = (n) => {
   const num = parseFloat(n);
   if (isNaN(num) || num === 0) return null;
-  return `â‚¹ ${num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `Rs. ${num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
 export default function RecipeListPage() {
@@ -124,7 +124,7 @@ export default function RecipeListPage() {
         {hasFilters && (
           <button onClick={() => setFilters({ search: '', status: '', mealType: '', category: '', page: 1, limit: 18 })}
             style={{ padding: '8px 14px', border: '1.5px solid #e2e8f0', borderRadius: 8, background: '#fff', fontSize: '0.8rem', cursor: 'pointer', color: '#64748b' }}>
-            âœ• Clear
+            œ• Clear
           </button>
         )}
       </div>
@@ -145,7 +145,7 @@ export default function RecipeListPage() {
         </div>
       ) : recipes.length === 0 ? (
         <div style={{ background: '#fff', borderRadius: 16, padding: '60px 20px', textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-          <div style={{ fontSize: '3rem', marginBottom: 12 }}>ðŸ½ï¸</div>
+          <div style={{ fontSize: '3rem', marginBottom: 12 }}>Ÿ</div>
           <h3 style={{ color: '#0f172a', fontWeight: 600, margin: '0 0 8px' }}>No recipes found</h3>
           <p style={{ color: '#94a3b8', margin: '0 0 20px' }}>
             {hasFilters ? 'Try adjusting your filters' : 'Start by creating your first recipe'}
@@ -180,7 +180,7 @@ export default function RecipeListPage() {
                     {recipe.recipeCode}
                   </span>
                   <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-                    {MEAL_ICONS[recipe.mealType] || 'ðŸ½ï¸'} {recipe.mealType}
+const MEAL_ICONS = {
                   </span>
                 </div>
 
@@ -216,7 +216,7 @@ export default function RecipeListPage() {
                     {isAdmin && recipe.status === 'DRAFT' && (
                       <button onClick={(e) => { e.stopPropagation(); setDeleteConfirm(recipe); }}
                         style={{ padding: '4px 8px', borderRadius: 6, border: '1.5px solid #fee2e2', background: '#fef2f2', fontSize: '0.75rem', cursor: 'pointer', color: '#dc2626' }}>
-                        ðŸ—‘ï¸
+                        Ÿ—‘
                       </button>
                     )}
                   </div>
@@ -232,12 +232,12 @@ export default function RecipeListPage() {
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 12, marginTop: 32 }}>
           <button disabled={filters.page <= 1} onClick={() => setFilters((f) => ({ ...f, page: f.page - 1 }))}
             style={{ padding: '8px 16px', borderRadius: 8, border: '1.5px solid #e2e8f0', background: filters.page <= 1 ? '#f8fafc' : '#fff', cursor: filters.page <= 1 ? 'not-allowed' : 'pointer', fontSize: '0.875rem', color: filters.page <= 1 ? '#94a3b8' : '#0f172a' }}>
-            â† Prev
+            † Prev
           </button>
           <span style={{ fontSize: '0.875rem', color: '#64748b' }}>Page {pagination.page} of {pagination.totalPages}</span>
           <button disabled={filters.page >= pagination.totalPages} onClick={() => setFilters((f) => ({ ...f, page: f.page + 1 }))}
             style={{ padding: '8px 16px', borderRadius: 8, border: '1.5px solid #e2e8f0', background: filters.page >= pagination.totalPages ? '#f8fafc' : '#fff', cursor: filters.page >= pagination.totalPages ? 'not-allowed' : 'pointer', fontSize: '0.875rem', color: filters.page >= pagination.totalPages ? '#94a3b8' : '#0f172a' }}>
-            Next â†’
+            Next †’
           </button>
         </div>
       )}
@@ -268,3 +268,4 @@ export default function RecipeListPage() {
     </div>
   );
 }
+

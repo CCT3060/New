@@ -21,7 +21,7 @@ const createRecipeSchema = Joi.object({
   portionPerPax: Joi.number().positive().optional().default(1),
   prepTimeMin: Joi.number().integer().min(0).default(0),
   cookTimeMin: Joi.number().integer().min(0).default(0),
-  warehouseId: Joi.string().uuid().required(),
+  warehouseId: Joi.string().uuid().optional(),
   tags: Joi.array().items(Joi.string().trim().max(50)).optional().default([]),
 });
 

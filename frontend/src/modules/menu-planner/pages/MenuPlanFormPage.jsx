@@ -26,7 +26,6 @@ export default function MenuPlanForm({ existingPlan, warehouseId }) {
     planDate: existingPlan?.planDate ? existingPlan.planDate.split('T')[0] : today(),
     mealType: existingPlan?.mealType || 'LUNCH',
     description: existingPlan?.description || '',
-    warehouseId: existingPlan?.warehouseId || warehouseId || '',
   });
 
   const [selectedRecipes, setSelectedRecipes] = useState(
@@ -43,7 +42,6 @@ export default function MenuPlanForm({ existingPlan, warehouseId }) {
     if (!form.planName.trim()) e.planName = 'Plan name is required';
     if (!form.planDate) e.planDate = 'Date is required';
     if (!form.mealType) e.mealType = 'Meal type is required';
-    if (!form.warehouseId) e.warehouseId = 'Kitchen/Warehouse is required';
     return e;
   };
 
@@ -137,17 +135,6 @@ export default function MenuPlanForm({ existingPlan, warehouseId }) {
                     {MEAL_TYPES.map((m) => <option key={m} value={m}>{m}</option>)}
                   </select>
                 </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label required">Kitchen / Warehouse ID</label>
-                <input
-                  className={`form-control${errors.warehouseId ? ' error' : ''}`}
-                  value={form.warehouseId}
-                  onChange={(e) => setForm((p) => ({ ...p, warehouseId: e.target.value }))}
-                  placeholder="Warehouse ID"
-                />
-                {errors.warehouseId && <p className="form-error">{errors.warehouseId}</p>}
               </div>
 
               <div className="form-group">

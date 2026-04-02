@@ -1,5 +1,11 @@
 const prisma = require('../../db/prisma');
 
+const getDefaultWarehouseId = async () => {
+  const w = await prisma.warehouse.findFirst({ where: { isActive: true } });
+  if (!w) throw Object.assign(new Error('No warehouse configured'), { status: 400 });
+  return w.id;
+};
+
 const MENU_PLAN_INCLUDE = {
   warehouse: { select: { id: true, name: true, code: true } },
   creator: { select: { id: true, name: true, role: true } },
@@ -100,6 +106,7 @@ const getMenuPlanById = async (id) => {
  */
 const createMenuPlan = async (data, userId) => {
   const { items, ...planData } = data;
+  if (!planData.warehouseId) planData.warehouseId = await getDefaultWarehouseId();
 
   return prisma.menuPlan.create({
     data: {
@@ -226,13 +233,14 @@ const removeItem = async (menuPlanId, itemId) => {
  * Used by the calendar drop action.
  */
 const findOrCreatePlan = async (planDate, mealType, warehouseId, userId) => {
+  const resolvedWarehouseId = warehouseId || await getDefaultWarehouseId();
   const dateObj = new Date(planDate);
   const nextDay = new Date(dateObj.getTime() + 86400000);
 
   let plan = await prisma.menuPlan.findFirst({
     where: {
       mealType,
-      warehouseId,
+      warehouseId: resolvedWarehouseId,
       isActive: true,
       planDate: { gte: dateObj, lt: nextDay },
     },
@@ -245,7 +253,7 @@ const findOrCreatePlan = async (planDate, mealType, warehouseId, userId) => {
         planName: `${mealType.charAt(0) + mealType.slice(1).toLowerCase()} — ${fmt}`,
         planDate: dateObj,
         mealType,
-        warehouseId,
+        warehouseId: resolvedWarehouseId,
         createdBy: userId,
       },
     });
@@ -284,7 +292,8 @@ const moveItemBetweenSlots = async ({ itemId, sourcePlanId, targetDate, targetMe
   const item = await prisma.menuPlanItem.findFirst({ where: { id: itemId, menuPlanId: sourcePlanId } });
   if (!item) throw Object.assign(new Error('Item not found'), { status: 404 });
 
-  const targetPlan = await findOrCreatePlan(targetDate, targetMealType, warehouseId, userId);
+  const resolvedWarehouseId = warehouseId || await getDefaultWarehouseId();
+  const targetPlan = await findOrCreatePlan(targetDate, targetMealType, resolvedWarehouseId, userId);
 
   if (targetPlan.id === sourcePlanId) return; // same slot
 

@@ -8,7 +8,7 @@ import MealTypeBadge from './MealTypeBadge';
 
 const FOOD_TYPE_ICONS = { VEG: '🥦', NON_VEG: '🍗', EGG: '🥚', VEGAN: '🌱' };
 
-export default function DraggableRecipeCard({ recipe, type = 'recipe', item, planId, date, mealType, onRemove, compact = false }) {
+export default function DraggableRecipeCard({ recipe, type = 'recipe', item, planId, date, mealType, onRemove, compact = false, mealColors }) {
   const id = type === 'recipe' ? `recipe-${recipe.id}` : `item-${item?.id}`;
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id,
@@ -20,6 +20,9 @@ export default function DraggableRecipeCard({ recipe, type = 'recipe', item, pla
   const displayRecipe = recipe;
 
   if (compact) {
+    const bg = mealColors?.bg || '#f8fafc';
+    const border = mealColors?.border || '#e2e8f0';
+    const dot = mealColors?.dot || '#64748b';
     // Compact version inside calendar cell
     return (
       <div
@@ -30,37 +33,33 @@ export default function DraggableRecipeCard({ recipe, type = 'recipe', item, pla
           display: 'flex',
           alignItems: 'center',
           gap: 6,
-          padding: '4px 8px',
-          borderRadius: 6,
-          background: isDragging ? 'var(--color-primary-light)' : '#f8fafc',
-          border: `1px solid ${isDragging ? 'var(--color-primary)' : 'var(--color-gray-200)'}`,
-          fontSize: '0.75rem',
+          padding: '5px 8px',
+          borderRadius: 7,
+          background: isDragging ? '#eff6ff' : bg,
+          border: `1px solid ${isDragging ? '#2563eb' : border}`,
+          fontSize: '0.72rem',
           cursor: isDragging ? 'grabbing' : 'grab',
-          opacity: isDragging ? 0.5 : 1,
+          opacity: isDragging ? 0.4 : 1,
           userSelect: 'none',
           touchAction: 'none',
           position: 'relative',
+          boxShadow: isDragging ? 'none' : '0 1px 2px rgba(0,0,0,0.04)',
         }}
       >
-        <span style={{ fontSize: '0.85rem' }}>{FOOD_TYPE_ICONS[displayRecipe?.foodType] || ''}</span>
-        <span style={{ fontWeight: 600, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: dot, flexShrink: 0 }} />
+        <span style={{ fontWeight: 600, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#1e293b' }}>
           {displayRecipe?.recipeName}
         </span>
         {onRemove && (
           <button
             onClick={(e) => { e.stopPropagation(); onRemove(); }}
             style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--color-gray-400)',
-              padding: '0 2px',
-              fontSize: '0.8rem',
-              lineHeight: 1,
-              flexShrink: 0,
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: '#94a3b8', padding: '0 2px', fontSize: '0.75rem',
+              lineHeight: 1, flexShrink: 0,
             }}
             title="Remove"
-            onPointerDown={(e) => e.stopPropagation()} // don't start drag when clicking remove
+            onPointerDown={(e) => e.stopPropagation()}
           >
             ✕
           </button>

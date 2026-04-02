@@ -59,6 +59,15 @@ const buildCostData = (ingredients, { fuelCost = 0, laborCost = 0, packagingCost
 };
 
 /**
+ * Get the first active warehouse (fallback when none specified)
+ */
+const getDefaultWarehouseId = async () => {
+  const warehouse = await prisma.warehouse.findFirst({ where: { isActive: true } });
+  if (!warehouse) throw new AppError('No warehouse configured in the system', 400);
+  return warehouse.id;
+};
+
+/**
  * Assert recipe exists and not deleted
  */
 const assertRecipeExists = async (id) => {
@@ -107,6 +116,11 @@ const createRecipe = async (data, userId) => {
   const existing = await recipeRepo.findByCode(data.recipeCode);
   if (existing) {
     throw new AppError(`Recipe code '${data.recipeCode}' already exists`, 409);
+  }
+
+  // Auto-assign warehouse if not provided
+  if (!data.warehouseId) {
+    data.warehouseId = await getDefaultWarehouseId();
   }
 
   const { tags = [], status: initialStatus, ...recipeData } = data;

@@ -21,7 +21,6 @@ import { useWeekMenuPlans, useDropOnSlot, useMoveItem, useDeleteMenuPlanItem } f
 import { useRecipeLookup } from '../hooks/useMenuPlanner';
 import DraggableRecipeCard from '../components/DraggableRecipeCard';
 import CalendarCell from '../components/CalendarCell';
-import MealTypeBadge from '../components/MealTypeBadge';
 import { useAuth } from '../../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import { menuPlanApi } from '../services/menu-planner.api';
@@ -54,7 +53,7 @@ export default function MenuPlanCalendarPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const warehouseId = user?.warehouseId || '';
+  const warehouseId = user?.warehouseId || undefined; // optional — backend auto-assigns
   const canManage = ['ADMIN', 'OPS_MANAGER', 'KITCHEN_MANAGER'].includes(user?.role);
 
   const [weekStart, setWeekStart] = useState(() =>
@@ -131,7 +130,7 @@ export default function MenuPlanCalendarPage() {
         await dropOnSlot({
           planDate: targetDate,
           mealType: targetMealType,
-          warehouseId,
+          warehouseId: warehouseId || undefined,
           recipeId: dragData.recipe.id,
           servings: 1,
         });
@@ -146,7 +145,7 @@ export default function MenuPlanCalendarPage() {
           sourcePlanId: dragData.planId,
           targetDate,
           targetMealType,
-          warehouseId,
+          warehouseId: warehouseId || undefined,
         });
       }
     } catch {
@@ -177,10 +176,10 @@ export default function MenuPlanCalendarPage() {
         {/* ── Left: Recipe Panel ─────────────────────────────────────────── */}
         <aside
           style={{
-            width: 240,
-            minWidth: 240,
-            background: '#fff',
-            borderRight: '1px solid var(--color-gray-200)',
+            width: 250,
+            minWidth: 250,
+            background: '#f8fafc',
+            borderRight: '1px solid #e2e8f0',
             display: 'flex',
             flexDirection: 'column',
             padding: '16px 12px',
@@ -188,19 +187,23 @@ export default function MenuPlanCalendarPage() {
           }}
         >
           <div style={{ marginBottom: 12 }}>
-            <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-gray-700)', marginBottom: 10 }}>
-              📦 Recipes
+            <h3 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#374151', marginBottom: 12, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              Recipes
             </h3>
             <input
-              className="form-control"
-              style={{ marginBottom: 8, fontSize: '0.8rem', padding: '6px 10px' }}
-              placeholder="Search recipes..."
+              style={{
+                width: '100%', marginBottom: 8, fontSize: '0.8rem', padding: '7px 10px',
+                border: '1.5px solid #e2e8f0', borderRadius: 8, background: '#fff', outline: 'none', boxSizing: 'border-box',
+              }}
+              placeholder="🔍 Search recipes..."
               value={recipeSearch}
               onChange={(e) => setRecipeSearch(e.target.value)}
             />
             <select
-              className="form-control"
-              style={{ fontSize: '0.8rem', padding: '6px 10px' }}
+              style={{
+                width: '100%', fontSize: '0.8rem', padding: '7px 10px',
+                border: '1.5px solid #e2e8f0', borderRadius: 8, background: '#fff', outline: 'none',
+              }}
               value={recipeMealFilter}
               onChange={(e) => setRecipeMealFilter(e.target.value)}
             >
@@ -209,8 +212,8 @@ export default function MenuPlanCalendarPage() {
             </select>
           </div>
 
-          <p style={{ fontSize: '0.72rem', color: 'var(--color-gray-400)', marginBottom: 10 }}>
-            Drag a recipe onto a calendar slot →
+          <p style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: 10, textAlign: 'center' }}>
+            Drag onto a calendar slot →
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
@@ -233,34 +236,48 @@ export default function MenuPlanCalendarPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '12px 20px',
+              padding: '14px 20px',
               background: '#fff',
-              borderBottom: '1px solid var(--color-gray-200)',
+              borderBottom: '1px solid #e2e8f0',
               position: 'sticky',
               top: 0,
               zIndex: 10,
+              boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
             }}
           >
-            <button className="btn btn-secondary btn-sm" onClick={() => setWeekStart((w) => subWeeks(w, 1))}>
-              ← Prev Week
+            <button
+              onClick={() => setWeekStart((w) => subWeeks(w, 1))}
+              style={{ padding: '7px 14px', borderRadius: 8, border: '1.5px solid #e2e8f0', background: '#fff', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500 }}
+            >
+              ← Prev
             </button>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-gray-800)' }}>
-                Menu Planner — Weekly Calendar
+              <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a' }}>
+                Weekly Menu Planner
               </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-gray-500)' }}>
+              <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: 2 }}>
                 {format(weekDays[0], 'd MMM')} – {format(weekDays[6], 'd MMM yyyy')}
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <button className="btn btn-secondary btn-sm" onClick={() => setWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }))}>
+              <button
+                onClick={() => setWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }))}
+                style={{ padding: '7px 14px', borderRadius: 8, border: '1.5px solid #2563eb', background: '#eff6ff', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: '#2563eb' }}
+              >
                 Today
               </button>
-              <button className="btn btn-secondary btn-sm" onClick={() => setWeekStart((w) => addWeeks(w, 1))}>
-                Next Week →
+              <button
+                onClick={() => setWeekStart((w) => addWeeks(w, 1))}
+                style={{ padding: '7px 14px', borderRadius: 8, border: '1.5px solid #e2e8f0', background: '#fff', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500 }}
+              >
+                Next →
               </button>
-              <div style={{ width: 1, height: 20, background: 'var(--color-gray-200)', margin: '0 4px' }} />
-              <button className="btn btn-sm btn-outline" title="Switch to List view" onClick={() => navigate('/menu-planner/list')}>
+              <div style={{ width: 1, height: 20, background: '#e2e8f0', margin: '0 4px' }} />
+              <button
+                onClick={() => navigate('/menu-planner/list')}
+                style={{ padding: '7px 12px', borderRadius: 8, border: '1.5px solid #e2e8f0', background: '#fff', cursor: 'pointer', fontSize: '0.8rem', color: '#64748b' }}
+                title="Switch to List view"
+              >
                 ☰ List
               </button>
             </div>
@@ -270,21 +287,21 @@ export default function MenuPlanCalendarPage() {
           <div style={{ flex: 1, overflow: 'auto', padding: '0 0 20px 0' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 900 }}>
               <thead>
-                <tr style={{ background: 'var(--color-gray-50)' }}>
-                  {/* Meal type header col */}
+                <tr style={{ background: '#f8fafc' }}>
                   <th
                     style={{
-                      width: 100,
+                      width: 90,
                       padding: '10px 12px',
-                      borderRight: '1px solid var(--color-gray-200)',
-                      borderBottom: '2px solid var(--color-gray-300)',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: 'var(--color-gray-500)',
+                      borderRight: '1px solid #e2e8f0',
+                      borderBottom: '2px solid #e2e8f0',
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                      color: '#94a3b8',
                       textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
                       position: 'sticky',
                       left: 0,
-                      background: 'var(--color-gray-50)',
+                      background: '#f8fafc',
                       zIndex: 5,
                     }}
                   >
@@ -297,35 +314,24 @@ export default function MenuPlanCalendarPage() {
                         key={day.toISOString()}
                         style={{
                           padding: '10px 8px',
-                          borderBottom: '2px solid var(--color-gray-300)',
-                          borderRight: '1px solid var(--color-gray-200)',
+                          borderBottom: '2px solid #e2e8f0',
+                          borderRight: '1px solid #f1f5f9',
                           textAlign: 'center',
                           minWidth: 130,
-                          background: isToday ? 'var(--color-primary-light)' : 'var(--color-gray-50)',
+                          background: isToday ? '#eff6ff' : '#f8fafc',
                         }}
                       >
-                        <div
-                          style={{
-                            fontSize: '0.8rem',
-                            fontWeight: 700,
-                            color: isToday ? 'var(--color-primary)' : 'var(--color-gray-700)',
-                          }}
-                        >
+                        <div style={{ fontSize: '0.75rem', fontWeight: 600, color: isToday ? '#2563eb' : '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                           {format(day, 'EEE')}
                         </div>
-                        <div
-                          style={{
-                            fontSize: '1.1rem',
-                            fontWeight: 800,
-                            color: isToday ? 'var(--color-primary)' : 'var(--color-gray-800)',
-                            lineHeight: 1.2,
-                          }}
-                        >
+                        <div style={{
+                          fontSize: '1.25rem', fontWeight: 800,
+                          color: isToday ? '#2563eb' : '#0f172a',
+                          lineHeight: 1.2,
+                        }}>
                           {format(day, 'd')}
                         </div>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--color-gray-400)' }}>
-                          {format(day, 'MMM')}
-                        </div>
+                        <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{format(day, 'MMM')}</div>
                       </th>
                     );
                   })}
@@ -334,23 +340,24 @@ export default function MenuPlanCalendarPage() {
               <tbody>
                 {MEAL_TYPES.map((mealType) => (
                   <tr key={mealType}>
-                    {/* Meal type label */}
                     <td
                       style={{
                         padding: '8px 10px',
-                        borderRight: '1px solid var(--color-gray-200)',
-                        borderBottom: '1px solid var(--color-gray-100)',
-                        verticalAlign: 'top',
+                        borderRight: '1px solid #e2e8f0',
+                        borderBottom: '1px solid #f1f5f9',
+                        verticalAlign: 'middle',
                         position: 'sticky',
                         left: 0,
-                        background: '#fff',
+                        background: '#f8fafc',
                         zIndex: 4,
-                        minWidth: 100,
+                        minWidth: 90,
                       }}
                     >
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
                         <span style={{ fontSize: '1.2rem' }}>{MEAL_ICONS[mealType]}</span>
-                        <MealTypeBadge mealType={mealType} />
+                        <span style={{ fontSize: '0.65rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          {mealType}
+                        </span>
                       </div>
                     </td>
 
@@ -399,23 +406,27 @@ function DragOverlayCard({ item }) {
     <div
       style={{
         background: '#fff',
-        border: '2px solid var(--color-primary)',
-        borderRadius: 8,
-        padding: '8px 12px',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+        border: '2px solid #2563eb',
+        borderRadius: 10,
+        padding: '9px 14px',
+        boxShadow: '0 12px 32px rgba(0,0,0,0.2)',
         fontSize: '0.8rem',
-        fontWeight: 600,
-        color: 'var(--color-gray-800)',
+        fontWeight: 700,
+        color: '#0f172a',
         maxWidth: 200,
         cursor: 'grabbing',
         opacity: 0.95,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
       }}
     >
-      <div style={{ marginBottom: 2 }}>
-        {FOOD_TYPE_ICONS[recipe.foodType] || ''} {recipe.recipeName}
-      </div>
-      <div style={{ fontSize: '0.72rem', color: 'var(--color-gray-500)', fontFamily: 'var(--font-mono)' }}>
-        {recipe.recipeCode}
+      <span>{FOOD_TYPE_ICONS[recipe.foodType] || '🍽️'}</span>
+      <div>
+        <div>{recipe.recipeName}</div>
+        <div style={{ fontSize: '0.7rem', color: '#64748b', fontFamily: 'monospace', fontWeight: 400, marginTop: 2 }}>
+          {recipe.recipeCode}
+        </div>
       </div>
     </div>
   );

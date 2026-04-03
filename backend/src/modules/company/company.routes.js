@@ -1,11 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const rateLimit = require('express-rate-limit');
 const ctrl = require('./company.controller');
 const { verifyCompanyToken } = require('./company.service');
 const { AppError } = require('../../middleware/error.middleware');
-
-const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, message: { success: false, message: 'Too many login attempts, please try again later.' } });
 
 // Middleware: verify company JWT
 const companyAuth = (req, res, next) => {
@@ -19,7 +16,7 @@ const companyAuth = (req, res, next) => {
   next();
 };
 
-router.post('/login', loginLimiter, ctrl.login);
+router.post('/login', ctrl.login);
 
 router.get('/kitchens',       companyAuth, ctrl.listKitchens);
 router.post('/kitchens',      companyAuth, ctrl.createKitchen);

@@ -25,6 +25,8 @@ import MenuPlanCalendarPage from './modules/menu-planner/pages/MenuPlanCalendarP
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
+  const isEmbed = window.self !== window.top;
+  if (isEmbed) return children;
   if (loading) return <div className="loading-center"><div className="spinner" /></div>;
   if (!user) return <Navigate to="/login" replace />;
   return children;

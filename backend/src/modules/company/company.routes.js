@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const ctrl = require('./company.controller');
 const { verifyCompanyToken } = require('./company.service');
+const recipeService = require('../recipe/recipe.service');
 const { AppError } = require('../../middleware/error.middleware');
+const { success } = require('../../utils/response');
 
 // Middleware: verify company JWT
 const companyAuth = (req, res, next) => {
@@ -17,6 +19,23 @@ const companyAuth = (req, res, next) => {
 };
 
 router.post('/login', ctrl.login);
+
+// ─── Pax Scale (company-auth, no inner token needed) ─────────────────────────
+router.get('/pax/recipes', companyAuth, async (req, res, next) => {
+  try {
+    const { recipes } = await recipeService.lookupRecipes({ limit: 200, page: 1 });
+    return success(res, { recipes });
+  } catch (err) { next(err); }
+});
+
+router.get('/pax/scale/:recipeId', companyAuth, async (req, res, next) => {
+  try {
+    const targetPax = parseInt(req.query.pax, 10);
+    if (!targetPax || targetPax <= 0) return next(new AppError('pax must be a positive integer', 400));
+    const result = await recipeService.scaleRecipe(req.params.recipeId, targetPax);
+    return success(res, result);
+  } catch (err) { next(err); }
+});
 
 router.get('/kitchens',       companyAuth, ctrl.listKitchens);
 router.post('/kitchens',      companyAuth, ctrl.createKitchen);

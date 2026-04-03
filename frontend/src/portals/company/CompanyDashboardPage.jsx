@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCompanyAuth } from '../../contexts/CompanyAuthContext';
 import { toast } from 'react-toastify';
+import PaxCountTab from './PaxCountTab';
 
 const cardStyle = {
   background: '#fff', borderRadius: 14, padding: '20px 24px',
@@ -212,6 +213,7 @@ export default function CompanyDashboardPage() {
     { key: 'recipes', icon: '📋', label: 'Recipes' },
     { key: 'report', icon: '📊', label: 'Recipe Report' },
     { key: 'menu-planner', icon: '📅', label: 'Menu Planner' },
+    { key: 'pax', icon: '⚖', label: 'Pax Count' },
   ];
 
   const APP_TAB_SRC = {
@@ -222,7 +224,7 @@ export default function CompanyDashboardPage() {
 
   const TAB_LABELS = {
     kitchens: '🍳 Kitchens', stores: '🏪 Stores', units: '🏢 Delivery Units', users: '👥 Kitchen Users',
-    recipes: '📋 Recipes', report: '📊 Recipe Report', 'menu-planner': '📅 Menu Planner',
+    recipes: '📋 Recipes', report: '📊 Recipe Report', 'menu-planner': '📅 Menu Planner', pax: '⚖ Pax Count',
   };
 
   return (
@@ -322,7 +324,12 @@ export default function CompanyDashboardPage() {
             title={TAB_LABELS[tab]}
           />
         )}
-        <div style={{ padding: '28px 32px', flex: 1, display: APP_TAB_SRC[tab] ? 'none' : 'block' }}>
+        {tab === 'pax' && (
+          <div style={{ padding: '28px 32px', flex: 1 }}>
+            <PaxCountTab />
+          </div>
+        )}
+        <div style={{ padding: '28px 32px', flex: 1, display: APP_TAB_SRC[tab] || tab === 'pax' ? 'none' : 'block' }}>
         {/* ── KITCHENS ── */}
         {tab === 'kitchens' && (
           <div style={cardStyle}>

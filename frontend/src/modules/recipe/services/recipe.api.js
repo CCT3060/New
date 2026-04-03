@@ -10,7 +10,9 @@ const api = axios.create({
 // Attach token to every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('ck_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token && token !== 'undefined' && token !== 'null') {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
@@ -27,7 +29,10 @@ api.interceptors.response.use(
     if (err.response?.status === 401) {
       localStorage.removeItem('ck_token');
       localStorage.removeItem('ck_user');
-      window.location.href = '/login';
+      // Only redirect to login when NOT embedded in the company portal iframe
+      if (window.self === window.top) {
+        window.location.href = '/login';
+      }
     }
 
     const error = new Error(message);

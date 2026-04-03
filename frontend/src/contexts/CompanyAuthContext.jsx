@@ -27,8 +27,10 @@ export function CompanyAuthProvider({ children }) {
     if (!data.success) throw new Error(data.message || 'Login failed');
     localStorage.setItem('company_token', data.data.token);
     localStorage.setItem('company_user', JSON.stringify({ ...data.data.user, company: data.data.company }));
-    localStorage.setItem('ck_token', data.data.innerToken);
-    localStorage.setItem('ck_user', JSON.stringify(data.data.user));
+    if (data.data.innerToken) {
+      localStorage.setItem('ck_token', data.data.innerToken);
+      localStorage.setItem('ck_user', JSON.stringify(data.data.user));
+    }
     setCompanyUser({ ...data.data.user, company: data.data.company });
     return data.data;
   }, []);

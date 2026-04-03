@@ -21,9 +21,12 @@ try {
 
     if (tableInfo && !/UNIQUE\s*\([^)]*recipe_id[^)]*\)/i.test(tableInfo.sql)) {
         // Old schema detected — migrate to 4-column unique constraint
+        console.log('[DB] Found old menu_plans schema. Migrating to 4-column uniqueness...');
+        
         db.exec(`
             BEGIN;
             ALTER TABLE menu_plans RENAME TO menu_plans_old;
+            
             CREATE TABLE menu_plans (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 company_id INTEGER NOT NULL,
@@ -34,14 +37,36 @@ try {
                 FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
                 UNIQUE(company_id, plan_date, category, recipe_id)
             );
-            INSERT OR IGNORE INTO menu_plans SELECT * FROM menu_plans_old;
+
+            -- Safer approach: Specify core columns for migration
+            INSERT OR IGNORE INTO menu_plans (id, company_id, recipe_id, plan_date, category)
+            SELECT id, company_id, recipe_id, plan_date, category FROM menu_plans_old;
+            
             DROP TABLE menu_plans_old;
             COMMIT;
         `);
-        console.log('[DB] Migrated menu_plans to 4-column unique constraint.');
+        console.log('[DB] Migrated menu_plans successfully.');
     }
 } catch (err) {
     console.error('[DB] Migration error:', err.message);
 }
+
+// Migration: add cost_per_unit to ingredients (price per unit in ₹)
+try {
+    db.exec('ALTER TABLE ingredients ADD COLUMN cost_per_unit REAL DEFAULT 0');
+    console.log('[DB] Added cost_per_unit column to ingredients.');
+} catch (_) { /* column already exists — safe to ignore */ }
+
+// Migration: add base_serves to recipes (how many people base quantities serve)
+try {
+    db.exec('ALTER TABLE recipes ADD COLUMN base_serves INTEGER DEFAULT 1');
+    console.log('[DB] Added base_serves column to recipes.');
+} catch (_) { /* column already exists — safe to ignore */ }
+
+// Migration: add pax_count to menu_plans (default pax per plan entry)
+try {
+    db.exec('ALTER TABLE menu_plans ADD COLUMN pax_count INTEGER DEFAULT 1');
+    console.log('[DB] Added pax_count column to menu_plans.');
+} catch (_) { /* column already exists — safe to ignore */ }
 
 module.exports = db;

@@ -2,14 +2,13 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 
-// GET all recipes
+// GET all recipes (with ingredients + base_serves)
 router.get('/', (req, res) => {
     try {
         const recipes = db.prepare('SELECT * FROM recipes ORDER BY created_at DESC').all();
-        // Enrich with ingredients
         const fullRecipes = recipes.map(recipe => {
             const ingredients = db.prepare(`
-                SELECT i.id, i.name, i.unit, ri.quantity 
+                SELECT i.id, i.name, i.unit, i.cost_per_unit, ri.quantity 
                 FROM recipe_ingredients ri
                 JOIN ingredients i ON ri.ingredient_id = i.id
                 WHERE ri.recipe_id = ?
@@ -22,18 +21,68 @@ router.get('/', (req, res) => {
     }
 });
 
-// CREATE recipe
+// GET pax report for a recipe — scales ingredients for N people
+// GET /recipes/:id/pax-report?pax=50
+router.get('/:id/pax-report', (req, res) => {
+    const recipeId = req.params.id;
+    const pax = parseInt(req.query.pax) || 1;
+
+    try {
+        const recipe = db.prepare('SELECT * FROM recipes WHERE id = ?').get(recipeId);
+        if (!recipe) return res.status(404).json({ error: 'Recipe not found' });
+
+        const baseServes = recipe.base_serves || 1;
+        const multiplier = pax / baseServes;
+
+        const ingredients = db.prepare(`
+            SELECT i.id, i.name, i.unit, i.cost_per_unit, ri.quantity AS base_quantity
+            FROM recipe_ingredients ri
+            JOIN ingredients i ON ri.ingredient_id = i.id
+            WHERE ri.recipe_id = ?
+        `).all(recipeId);
+
+        let totalCost = 0;
+        const scaledIngredients = ingredients.map(ing => {
+            const scaledQty = parseFloat((ing.base_quantity * multiplier).toFixed(3));
+            const cost = parseFloat((scaledQty * (ing.cost_per_unit || 0)).toFixed(2));
+            totalCost += cost;
+            return {
+                id: ing.id,
+                name: ing.name,
+                unit: ing.unit,
+                cost_per_unit: ing.cost_per_unit || 0,
+                base_quantity: ing.base_quantity,
+                scaled_quantity: scaledQty,
+                line_cost: cost
+            };
+        });
+
+        res.json({
+            recipe_id: recipe.id,
+            recipe_name: recipe.name,
+            category_type: recipe.category_type,
+            base_serves: baseServes,
+            pax,
+            multiplier: parseFloat(multiplier.toFixed(4)),
+            ingredients: scaledIngredients,
+            total_cost: parseFloat(totalCost.toFixed(2))
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// CREATE recipe (with base_serves)
 router.post('/', (req, res) => {
-    const { name, description, category_type, ingredients } = req.body;
-    
-    // Use a transaction for atomicity
+    const { name, description, category_type, base_serves, ingredients } = req.body;
+
     const createRecipe = db.transaction((data) => {
         const info = db.prepare(
-            'INSERT INTO recipes (name, description, category_type) VALUES (?, ?, ?)'
-        ).run(data.name, data.description, data.category_type);
-        
+            'INSERT INTO recipes (name, description, category_type, base_serves) VALUES (?, ?, ?, ?)'
+        ).run(data.name, data.description, data.category_type, data.base_serves || 1);
+
         const recipeId = info.lastInsertRowid;
-        
+
         if (data.ingredients && data.ingredients.length > 0) {
             const insertIngredient = db.prepare(
                 'INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity) VALUES (?, ?, ?)'
@@ -42,13 +91,12 @@ router.post('/', (req, res) => {
                 insertIngredient.run(recipeId, item.ingredient_id, item.quantity);
             }
         }
-        
         return recipeId;
     });
 
     try {
-        const id = createRecipe({ name, description, category_type, ingredients });
-        res.status(201).json({ id, name, description, category_type, ingredients });
+        const id = createRecipe({ name, description, category_type, base_serves, ingredients });
+        res.status(201).json({ id, name, description, category_type, base_serves, ingredients });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -56,19 +104,16 @@ router.post('/', (req, res) => {
 
 // UPDATE recipe
 router.put('/:id', (req, res) => {
-    const { name, description, category_type, ingredients } = req.body;
+    const { name, description, category_type, base_serves, ingredients } = req.body;
     const recipeId = req.params.id;
 
     const updateRecipe = db.transaction((data) => {
-        // Update basic info
         db.prepare(
-            'UPDATE recipes SET name = ?, description = ?, category_type = ? WHERE id = ?'
-        ).run(data.name, data.description, data.category_type, recipeId);
+            'UPDATE recipes SET name = ?, description = ?, category_type = ?, base_serves = ? WHERE id = ?'
+        ).run(data.name, data.description, data.category_type, data.base_serves || 1, recipeId);
 
-        // Clear existing ingredients
         db.prepare('DELETE FROM recipe_ingredients WHERE recipe_id = ?').run(recipeId);
 
-        // Insert new ingredients
         if (data.ingredients && data.ingredients.length > 0) {
             const insertIngredient = db.prepare(
                 'INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity) VALUES (?, ?, ?)'
@@ -80,8 +125,8 @@ router.put('/:id', (req, res) => {
     });
 
     try {
-        updateRecipe({ name, description, category_type, ingredients });
-        res.json({ id: recipeId, name, description, category_type, ingredients });
+        updateRecipe({ name, description, category_type, base_serves, ingredients });
+        res.json({ id: recipeId, name, description, category_type, base_serves, ingredients });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

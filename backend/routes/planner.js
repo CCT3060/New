@@ -1,16 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
-const { addDays, format, startOfWeek, endOfWeek, eachDayOfInterval } = require('date-fns');
+const { addDays, format, eachDayOfInterval } = require('date-fns');
 
 // GET menu plans for a company in a date range
 router.get('/', (req, res) => {
     const { company_id, start_date, end_date } = req.query;
     try {
         const plans = db.prepare(`
-            SELECT mp.*, r.name as recipe_name, r.category_type
+            SELECT mp.*, r.name as recipe_name, r.category_type, r.base_serves,
+                   c.name as company_name
             FROM menu_plans mp
             JOIN recipes r ON mp.recipe_id = r.id
+            JOIN companies c ON mp.company_id = c.id
             WHERE mp.company_id = ? AND mp.plan_date BETWEEN ? AND ?
             ORDER BY mp.plan_date ASC
         `).all(company_id, start_date, end_date);
@@ -20,18 +22,87 @@ router.get('/', (req, res) => {
     }
 });
 
+// GET plans across ALL companies in a date range (for overview/admin reports)
+router.get('/all', (req, res) => {
+    const { start_date, end_date } = req.query;
+    try {
+        const plans = db.prepare(`
+            SELECT mp.*, r.name as recipe_name, r.category_type, r.base_serves,
+                   c.name as company_name
+            FROM menu_plans mp
+            JOIN recipes r ON mp.recipe_id = r.id
+            JOIN companies c ON mp.company_id = c.id
+            WHERE mp.plan_date BETWEEN ? AND ?
+            ORDER BY mp.plan_date ASC, c.name ASC
+        `).all(start_date, end_date);
+        res.json(plans);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // CREATE/UPDATE a single menu plan entry (Manual Drag & Drop)
 router.post('/assign', (req, res) => {
-    const { company_id, recipe_id, plan_date, category } = req.body;
+    const { company_id, recipe_id, plan_date, category, pax_count } = req.body;
     try {
-        // Insert new recipe for the slot; UNIQUE constraint on (company, date, category, recipe)
-        // prevents adding the SAME recipe multiple times, but multiple DIFFERENT recipes are allowed.
         const info = db.prepare(`
-            INSERT INTO menu_plans (company_id, recipe_id, plan_date, category)
-            VALUES (?, ?, ?, ?)
-            ON CONFLICT(company_id, plan_date, category, recipe_id) DO NOTHING
-        `).run(company_id, recipe_id, plan_date, category);
+            INSERT INTO menu_plans (company_id, recipe_id, plan_date, category, pax_count)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(company_id, plan_date, category, recipe_id) DO UPDATE SET pax_count = excluded.pax_count
+        `).run(company_id, recipe_id, plan_date, category, pax_count || 1);
         res.json({ message: 'Menu updated', id: info.lastInsertRowid });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// CREATE/UPDATE multiple menu plan entries at once (Batch Assignment)
+router.post('/assign-batch', (req, res) => {
+    const { company_ids, recipe_id, plan_date, category, pax_count } = req.body;
+    try {
+        const insertStmt = db.prepare(`
+            INSERT INTO menu_plans (company_id, recipe_id, plan_date, category, pax_count)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(company_id, plan_date, category, recipe_id) DO UPDATE SET pax_count = excluded.pax_count
+        `);
+
+        const transaction = db.transaction((ids) => {
+            const results = [];
+            for (const id of ids) {
+                const info = insertStmt.run(id, recipe_id, plan_date, category, pax_count || 1);
+                results.push({ id: info.lastInsertRowid, company_id: id });
+            }
+            return results;
+        });
+
+        const results = transaction(company_ids);
+        res.json({ message: `Successfully assigned to ${results.length} companies`, results });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// UPDATE pax_count for a specific plan entry
+router.patch('/:id/pax', (req, res) => {
+    const { pax_count } = req.body;
+    try {
+        db.prepare('UPDATE menu_plans SET pax_count = ? WHERE id = ?').run(pax_count, req.params.id);
+        res.json({ message: 'Pax updated' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// REPLACE a recipe in a slot (swap recipe_id)
+router.patch('/:id/replace', (req, res) => {
+    const { new_recipe_id } = req.body;
+    try {
+        // Check new_recipe_id exists
+        const recipe = db.prepare('SELECT id FROM recipes WHERE id = ?').get(new_recipe_id);
+        if (!recipe) return res.status(404).json({ error: 'New recipe not found' });
+
+        db.prepare('UPDATE menu_plans SET recipe_id = ? WHERE id = ?').run(new_recipe_id, req.params.id);
+        res.json({ message: 'Recipe replaced' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -49,14 +120,13 @@ router.delete('/:id', (req, res) => {
 
 // SMART SHUFFLE LOGICAL v2.0 (Non-Repetition Rules)
 router.post('/shuffle', (req, res) => {
-    const { company_id, start_date } = req.body; 
-    
+    const { company_id, start_date } = req.body;
+
     try {
         const startDate = new Date(start_date);
         const endDate = addDays(startDate, 6);
         const days = eachDayOfInterval({ start: startDate, end: endDate });
 
-        // Get all available recipes by category
         const allRecipes = db.prepare('SELECT id, name, category_type FROM recipes').all();
         const recipesByCategory = {
             'Breakfast': allRecipes.filter(r => r.category_type === 'Breakfast'),
@@ -65,7 +135,6 @@ router.post('/shuffle', (req, res) => {
             'Evening Snacks': allRecipes.filter(r => r.category_type === 'Evening Snacks')
         };
 
-        // Get previous week's plans and previous day's plans for strict non-repetition
         const lookbackDate = format(addDays(startDate, -7), 'yyyy-MM-dd');
         const prevPlans = db.prepare(`
             SELECT recipe_id, plan_date, category 
@@ -81,7 +150,6 @@ router.post('/shuffle', (req, res) => {
 
         const newPlans = [];
         const usedThisShuffle = { 'Lunch': new Set(), 'Dinner': new Set(), 'Breakfast': new Set(), 'Evening Snacks': new Set() };
-        // Track actual yesterday's selection per category (separate from full-week set)
         const lastDaySelections = { 'Breakfast': new Set(), 'Lunch': new Set(), 'Dinner': new Set(), 'Evening Snacks': new Set() };
 
         let prevDayDate = format(addDays(startDate, -1), 'yyyy-MM-dd');
@@ -89,50 +157,28 @@ router.post('/shuffle', (req, res) => {
         for (const [dayIdx, day] of days.entries()) {
             const dateStr = format(day, 'yyyy-MM-dd');
             const sameDayLastWeekStr = format(addDays(day, -7), 'yyyy-MM-dd');
-            
+
             ['Breakfast', 'Lunch', 'Dinner', 'Evening Snacks'].forEach(category => {
                 let pool = recipesByCategory[category];
                 if (!pool.length) return;
 
-                // Rule 1: No repeat from actual yesterday (first day: check DB, subsequent: last selection)
                 const yesterdayIds = dayIdx === 0
                     ? new Set(getPrevIds(prevDayDate, category))
                     : lastDaySelections[category];
 
-                // Rule 2: No repeat from same day last week
                 const lastWeekIds = new Set(getPrevIds(sameDayLastWeekStr, category));
-
-                // Rule 3: No repeat within this week's shuffle
                 const thisWeekIds = usedThisShuffle[category];
 
-                // Level 1: Avoid all three rules
                 let available = pool.filter(r =>
                     !yesterdayIds.has(r.id) && !lastWeekIds.has(r.id) && !thisWeekIds.has(r.id)
                 );
-
-                // Level 2: Relax "this week" rule (allow repeats from earlier this week)
-                if (available.length === 0) {
-                    available = pool.filter(r => !yesterdayIds.has(r.id) && !lastWeekIds.has(r.id));
-                }
-
-                // Level 3: Relax last-week rule too (only avoid yesterday)
-                if (available.length === 0) {
-                    available = pool.filter(r => !yesterdayIds.has(r.id));
-                }
-
-                // Level 4: No rules (pick any)
-                if (available.length === 0) {
-                    available = pool;
-                }
+                if (available.length === 0) available = pool.filter(r => !yesterdayIds.has(r.id) && !lastWeekIds.has(r.id));
+                if (available.length === 0) available = pool.filter(r => !yesterdayIds.has(r.id));
+                if (available.length === 0) available = pool;
 
                 if (available.length > 0) {
                     const selected = available[Math.floor(Math.random() * available.length)];
-                    newPlans.push({
-                        company_id,
-                        recipe_id: selected.id,
-                        plan_date: dateStr,
-                        category
-                    });
+                    newPlans.push({ company_id, recipe_id: selected.id, plan_date: dateStr, category });
                     usedThisShuffle[category].add(selected.id);
                     lastDaySelections[category] = new Set([selected.id]);
                 }
@@ -140,18 +186,12 @@ router.post('/shuffle', (req, res) => {
             prevDayDate = dateStr;
         }
 
-        // Transactional insert; we allow multi-item in assign, but shuffle replaces the week
-        // To keep it clean, maybe we delete existing for the week first or just append?
-        // User said "smart automate", usually implies a fresh start for that week.
         const insertStmt = db.prepare(`
             INSERT INTO menu_plans (company_id, recipe_id, plan_date, category)
             VALUES (?, ?, ?, ?)
             ON CONFLICT(company_id, plan_date, category, recipe_id) DO NOTHING
         `);
-
-        const deleteStmt = db.prepare(`
-            DELETE FROM menu_plans WHERE company_id = ? AND plan_date BETWEEN ? AND ?
-        `);
+        const deleteStmt = db.prepare(`DELETE FROM menu_plans WHERE company_id = ? AND plan_date BETWEEN ? AND ?`);
 
         const transaction = db.transaction((plans) => {
             deleteStmt.run(company_id, start_date, format(addDays(startDate, 6), 'yyyy-MM-dd'));
@@ -162,20 +202,67 @@ router.post('/shuffle', (req, res) => {
 
         transaction(newPlans);
         res.json({ message: 'Smart Shuffle Complete!', count: newPlans.length });
-
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// COPY WEEK FROM ANOTHER COMPANY
+// COPY MENU — supports week copy (start_date) OR custom range (from_date / to_date)
+// Target can be one or multiple companies (to_company_ids as array or to_company_id as single)
+router.post('/copy-range', (req, res) => {
+    const { from_company_id, to_company_ids, from_date, to_date } = req.body;
+
+    if (!from_company_id || !from_date || !to_date) {
+        return res.status(400).json({ error: 'from_company_id, from_date, and to_date are required' });
+    }
+
+    const targetIds = Array.isArray(to_company_ids) ? to_company_ids : [to_company_ids];
+
+    try {
+        const sourcePlans = db.prepare(`
+            SELECT recipe_id, plan_date, category 
+            FROM menu_plans 
+            WHERE company_id = ? AND plan_date BETWEEN ? AND ?
+        `).all(from_company_id, from_date, to_date);
+
+        if (sourcePlans.length === 0) {
+            return res.status(404).json({ error: 'No menu plans found for the source company in this range.' });
+        }
+
+        const insertStmt = db.prepare(`
+            INSERT INTO menu_plans (company_id, recipe_id, plan_date, category)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(company_id, plan_date, category, recipe_id) DO NOTHING
+        `);
+        const deleteStmt = db.prepare(`DELETE FROM menu_plans WHERE company_id = ? AND plan_date BETWEEN ? AND ?`);
+
+        const transaction = db.transaction((plans, targetCompanyId) => {
+            deleteStmt.run(targetCompanyId, from_date, to_date);
+            for (const plan of plans) {
+                insertStmt.run(targetCompanyId, plan.recipe_id, plan.plan_date, plan.category);
+            }
+        });
+
+        let totalCopied = 0;
+        for (const targetId of targetIds) {
+            if (parseInt(targetId) === parseInt(from_company_id)) continue; // skip self
+            transaction(sourcePlans, targetId);
+            totalCopied += sourcePlans.length;
+        }
+
+        res.json({ message: `Successfully copied ${sourcePlans.length} items to ${targetIds.length} company/companies!`, totalCopied });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Legacy COPY WEEK (kept for backward compat)
 router.post('/copy-week', (req, res) => {
     const { from_company_id, to_company_id, start_date } = req.body;
+    const endDate = format(addDays(new Date(start_date), 6), 'yyyy-MM-dd');
+    req.body = { from_company_id, to_company_ids: [to_company_id], from_date: start_date, to_date: endDate };
+    // redirect to copy-range logic inline
     try {
-        const startDate = new Date(start_date);
-        const endDate = format(addDays(startDate, 6), 'yyyy-MM-dd');
-
-        // Get plans from source company
         const sourcePlans = db.prepare(`
             SELECT recipe_id, plan_date, category 
             FROM menu_plans 
@@ -191,39 +278,27 @@ router.post('/copy-week', (req, res) => {
             VALUES (?, ?, ?, ?)
             ON CONFLICT(company_id, plan_date, category, recipe_id) DO NOTHING
         `);
+        const deleteStmt = db.prepare(`DELETE FROM menu_plans WHERE company_id = ? AND plan_date BETWEEN ? AND ?`);
 
-        const deleteStmt = db.prepare(`
-            DELETE FROM menu_plans WHERE company_id = ? AND plan_date BETWEEN ? AND ?
-        `);
-
-        const transaction = db.transaction((plans) => {
+        db.transaction((plans) => {
             deleteStmt.run(to_company_id, start_date, endDate);
-            for (const plan of plans) {
-                insertStmt.run(to_company_id, plan.recipe_id, plan.plan_date, plan.category);
-            }
-        });
+            for (const plan of plans) insertStmt.run(to_company_id, plan.recipe_id, plan.plan_date, plan.category);
+        })(sourcePlans);
 
-        transaction(sourcePlans);
         res.json({ message: `Successfully copied ${sourcePlans.length} menu items!` });
-
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// CLEAR WEEK FOR A COMPANY
+// CLEAR date range for a company
 router.post('/clear-week', (req, res) => {
-    const { company_id, start_date } = req.body;
+    const { company_id, start_date, end_date } = req.body;
     try {
-        const startDate = new Date(start_date);
-        const endDate = format(addDays(startDate, 6), 'yyyy-MM-dd');
-
-        db.prepare(`
-            DELETE FROM menu_plans 
-            WHERE company_id = ? AND plan_date BETWEEN ? AND ?
-        `).run(company_id, start_date, endDate);
-
-        res.json({ message: 'Week cleared successfully' });
+        const finalEnd = end_date || format(addDays(new Date(start_date), 6), 'yyyy-MM-dd');
+        db.prepare(`DELETE FROM menu_plans WHERE company_id = ? AND plan_date BETWEEN ? AND ?`)
+            .run(company_id, start_date, finalEnd);
+        res.json({ message: 'Range cleared successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

@@ -13,15 +13,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-#root {
+html, body, #root {
+  height: 100%;
   width: 100%;
-  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 @layer base {

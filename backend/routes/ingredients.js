@@ -14,12 +14,12 @@ router.get('/', (req, res) => {
 
 // CREATE ingredient
 router.post('/', (req, res) => {
-    const { name, unit } = req.body;
+    const { name, unit, cost_per_unit } = req.body;
     try {
         const info = db.prepare(
-            'INSERT INTO ingredients (name, unit) VALUES (?, ?)'
-        ).run(name, unit);
-        res.status(201).json({ id: info.lastInsertRowid, name, unit });
+            'INSERT INTO ingredients (name, unit, cost_per_unit) VALUES (?, ?, ?)'
+        ).run(name, unit, cost_per_unit || 0);
+        res.status(201).json({ id: info.lastInsertRowid, name, unit, cost_per_unit: cost_per_unit || 0 });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -27,13 +27,13 @@ router.post('/', (req, res) => {
 
 // UPDATE ingredient
 router.put('/:id', (req, res) => {
-    const { name, unit, is_active } = req.body;
+    const { name, unit, is_active, cost_per_unit } = req.body;
     try {
         const info = db.prepare(
-            'UPDATE ingredients SET name = ?, unit = ?, is_active = ? WHERE id = ?'
-        ).run(name, unit, is_active, req.params.id);
+            'UPDATE ingredients SET name = ?, unit = ?, is_active = ?, cost_per_unit = ? WHERE id = ?'
+        ).run(name, unit, is_active, cost_per_unit || 0, req.params.id);
         if (info.changes === 0) return res.status(404).json({ message: 'Ingredient not found' });
-        res.json({ id: req.params.id, name, unit, is_active });
+        res.json({ id: req.params.id, name, unit, is_active, cost_per_unit: cost_per_unit || 0 });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

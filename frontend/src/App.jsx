@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AdminLayout from './components/AdminLayout';
-import ClientLayout from './components/ClientLayout';
 import AdminDashboard from './pages/AdminDashboard';
 import CompaniesPage from './pages/CompaniesPage';
 import IngredientsPage from './pages/IngredientsPage';
 import RecipesPage from './pages/RecipesPage';
-import ClientPortal from './pages/ClientPortal';
+import PlannerPage from './pages/PlannerPage';
+import PaxReportPage from './pages/PaxReportPage';
 
 function App() {
   return (
@@ -13,18 +13,18 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/admin" replace />} />
         
-        {/* Admin Portal */}
+        {/* Unified Admin Portal */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="companies" element={<CompaniesPage />} />
           <Route path="ingredients" element={<IngredientsPage />} />
           <Route path="recipes" element={<RecipesPage />} />
+          <Route path="planner" element={<PlannerPage />} />
+          <Route path="pax-report" element={<PaxReportPage />} />
         </Route>
 
-        {/* Client Portal */}
-        <Route path="/client" element={<ClientLayout />}>
-          <Route index element={<ClientPortal />} />
-        </Route>
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
     </Router>
   );

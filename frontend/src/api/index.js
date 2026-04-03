@@ -21,6 +21,7 @@ export const ingredientsApi = {
 
 export const recipesApi = {
   getAll: () => api.get('/recipes'),
+  getPaxReport: (id, pax) => api.get(`/recipes/${id}/pax-report`, { params: { pax } }),
   create: (data) => api.post('/recipes', data),
   update: (id, data) => api.put(`/recipes/${id}`, data),
   delete: (id) => api.delete(`/recipes/${id}`),
@@ -28,10 +29,15 @@ export const recipesApi = {
 
 export const plannerApi = {
   getPlans: (params) => api.get('/planner', { params }),
+  getPlansAll: (params) => api.get('/planner/all', { params }),
   assign: (data) => api.post('/planner/assign', data),
+  assignBatch: (data) => api.post('/planner/assign-batch', data),
+  updatePax: (id, pax_count) => api.patch(`/planner/${id}/pax`, { pax_count }),
+  replaceRecipe: (id, new_recipe_id) => api.patch(`/planner/${id}/replace`, { new_recipe_id }),
   shuffle: (data) => api.post('/planner/shuffle', data),
   delete: (id) => api.delete(`/planner/${id}`),
-  copyWeek: (data) => api.post('/planner/copy-week', data),
+  copyWeek: (data) => api.post('/planner/copy-week', data), // legacy
+  copyRange: (data) => api.post('/planner/copy-range', data),
   clearWeek: (data) => api.post('/planner/clear-week', data),
 };
 

@@ -9,7 +9,8 @@ import {
   ChevronRight,
   LogOut,
   Menu,
-  X
+  X,
+  ClipboardList
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -21,7 +22,8 @@ const AdminLayout = () => {
     { name: 'Companies', path: '/admin/companies', icon: Building2 },
     { name: 'Ingredients', path: '/admin/ingredients', icon: Beef },
     { name: 'Recipes', path: '/admin/recipes', icon: UtensilsCrossed },
-    { name: 'Client Portal', path: '/client', icon: CalendarDays },
+    { name: 'Menu Planner', path: '/admin/planner', icon: CalendarDays },
+    { name: 'Pax Count', path: '/admin/pax-report', icon: ClipboardList },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -31,9 +33,9 @@ const AdminLayout = () => {
       {/* Sidebar - Responsive Overlay */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-primary-600 flex items-center gap-2">
+          <h1 className="text-xl font-black text-primary-600 flex items-center gap-2 tracking-tighter uppercase">
             <UtensilsCrossed className="w-6 h-6" />
-            MenuPlanner
+            Menu Planner
           </h1>
           <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 text-slate-400 hover:text-slate-600">
             <X className="w-5 h-5" />
@@ -50,22 +52,22 @@ const AdminLayout = () => {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`flex items-center justify-between p-3 rounded-xl transition-all duration-200 group ${
                   isActive(item.path)
-                    ? 'bg-primary-50 text-primary-600 font-medium shadow-sm'
+                    ? 'bg-primary-600 text-white font-bold shadow-lg shadow-primary-100'
                     : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className={`w-5 h-5 ${isActive(item.path) ? 'text-primary-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                  <span>{item.name}</span>
+                  <Icon className={`w-5 h-5 ${isActive(item.path) ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                  <span className="text-sm font-bold">{item.name}</span>
                 </div>
-                {isActive(item.path) && <ChevronRight className="w-4 h-4 ml-auto" />}
+                {isActive(item.path) && <ChevronRight className="w-4 h-4 ml-auto opacity-70" />}
               </Link>
             );
           })}
         </nav>
 
         <div className="p-4 border-t border-slate-100">
-          <button className="flex items-center gap-3 w-full p-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+          <button className="flex items-center gap-3 w-full p-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors font-bold text-sm">
             <LogOut className="w-5 h-5" />
             <span>Logout</span>
           </button>
@@ -79,29 +81,25 @@ const AdminLayout = () => {
             <button onClick={() => setIsMobileMenuOpen(true)} className="md:hidden p-2 text-slate-500 hover:bg-slate-50 rounded-lg">
                 <Menu className="w-5 h-5" />
             </button>
-            <h2 className="text-sm md:text-lg font-semibold text-slate-800">
+            <h2 className="text-sm md:text-lg font-black text-slate-800 uppercase tracking-tight">
                 {menuItems.find(i => i.path === location.pathname)?.name || 'Admin Panel'}
             </h2>
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
-            <Link 
-              to="/client" 
-              className="text-[10px] md:text-xs font-bold bg-primary-50 text-primary-600 px-2 md:px-3 py-1.5 rounded-lg border border-primary-100 hover:bg-primary-100 transition-colors whitespace-nowrap"
-            >
-              Client Portal
-            </Link>
-            
-            <div className="hidden sm:flex items-center gap-3 border-l border-slate-100 pl-4">
-              <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center font-bold text-sm">
+            <div className="hidden sm:flex items-center gap-3 bg-slate-50 px-4 py-1.5 rounded-2xl border border-slate-100">
+              <div className="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center font-black text-xs">
                 AD
               </div>
-              <span className="text-sm font-medium">Admin</span>
+              <div>
+                <p className="text-xs font-black text-slate-800 uppercase leading-none">Basil Admin</p>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Superuser</p>
+              </div>
             </div>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 relative">
+        <div className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 min-h-0 custom-scrollbar">
            <Outlet />
         </div>
       </main>

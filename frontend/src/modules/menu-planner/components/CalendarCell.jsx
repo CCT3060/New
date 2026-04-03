@@ -13,14 +13,14 @@ const MEAL_COLORS = {
   DESSERT: { bg: '#fdf2f8', border: '#fbcfe8', dot: '#db2777' },
 };
 
-export default function CalendarCell({ date, mealType, planId, items, plan, canManage, onRemoveItem, isToday, weekLoading }) {
+export default function CalendarCell({ date, mealType, planId, items, plan, canManage, onRemoveItem, isToday, weekLoading, mealColor }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `cell-${date}-${mealType}`,
     data: { date, mealType },
   });
 
   const isEmpty = !items || items.length === 0;
-  const colors = MEAL_COLORS[mealType] || { bg: '#f8fafc', border: '#e2e8f0', dot: '#64748b' };
+  const colors = mealColor || MEAL_COLORS[mealType] || { bg: '#f8fafc', border: '#e2e8f0', dot: '#64748b' };
 
   return (
     <td

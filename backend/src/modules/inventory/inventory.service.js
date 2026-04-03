@@ -1,88 +1,89 @@
-const prisma = require('../../db/prisma');
+const { v4: uuidv4 } = require('uuid');
+const db = require('../../db/mysql');
 const { AppError } = require('../../middleware/error.middleware');
 
-/**
- * Get all inventory items with optional filters
- */
 const getItems = async ({ search, category, isActive, warehouseId, page = 1, limit = 50 } = {}) => {
-  const where = {};
+  const conditions = [];
+  const params = [];
   if (search) {
-    where.OR = [
-      { itemName: { contains: search, mode: 'insensitive' } },
-      { itemCode: { contains: search, mode: 'insensitive' } },
-    ];
+    conditions.push('(i.itemName LIKE ? OR i.itemCode LIKE ?)');
+    params.push(`%${search}%`, `%${search}%`);
   }
-  if (category) where.category = category;
-  if (isActive !== undefined) where.isActive = isActive === 'true' || isActive === true;
-  if (warehouseId) where.warehouseId = warehouseId;
+  if (category) { conditions.push('i.category = ?'); params.push(category); }
+  if (isActive !== undefined) { conditions.push('i.isActive = ?'); params.push((isActive === 'true' || isActive === true) ? 1 : 0); }
+  if (warehouseId) { conditions.push('i.warehouseId = ?'); params.push(warehouseId); }
 
+  const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
   const skip = (page - 1) * limit;
-  const [items, total] = await Promise.all([
-    prisma.inventoryItem.findMany({
-      where,
-      include: { warehouse: { select: { id: true, name: true, code: true } } },
-      orderBy: { itemName: 'asc' },
-      skip,
-      take: limit,
-    }),
-    prisma.inventoryItem.count({ where }),
-  ]);
 
-  return { items, total };
+  const [[{ total }]] = await db.query(`SELECT COUNT(*) AS total FROM inventory_items i ${where}`, params);
+  const [items] = await db.query(`
+    SELECT i.*, w.id AS wId, w.name AS wName, w.code AS wCode
+    FROM inventory_items i
+    LEFT JOIN warehouses w ON w.id = i.warehouseId
+    ${where} ORDER BY i.itemName ASC LIMIT ? OFFSET ?`,
+    [...params, limit, skip]
+  );
+  return { items: items.map(mapItem), total };
 };
 
-/**
- * Get a single inventory item by ID
- */
 const getItemById = async (id) => {
-  const item = await prisma.inventoryItem.findUnique({
-    where: { id },
-    include: { warehouse: { select: { id: true, name: true, code: true } } },
-  });
+  const [[item]] = await db.query(`
+    SELECT i.*, w.id AS wId, w.name AS wName, w.code AS wCode
+    FROM inventory_items i LEFT JOIN warehouses w ON w.id = i.warehouseId WHERE i.id = ?`, [id]
+  );
   if (!item) throw new AppError('Inventory item not found', 404);
-  return item;
+  return mapItem(item);
 };
 
-/**
- * Create inventory item
- */
 const createItem = async (data) => {
-  const existing = await prisma.inventoryItem.findUnique({ where: { itemCode: data.itemCode } });
+  const [[existing]] = await db.query('SELECT id FROM inventory_items WHERE itemCode = ?', [data.itemCode]);
   if (existing) throw new AppError(`Item with code '${data.itemCode}' already exists`, 409);
 
-  return prisma.inventoryItem.create({
-    data,
-    include: { warehouse: { select: { id: true, name: true, code: true } } },
-  });
+  const id = uuidv4();
+  await db.query(
+    'INSERT INTO inventory_items (id, itemCode, itemName, unit, costPerUnit, category, isActive, warehouseId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
+    [id, data.itemCode, data.itemName, data.unit, data.costPerUnit ?? 0, data.category || null, data.isActive !== false ? 1 : 0, data.warehouseId || null]
+  );
+  return getItemById(id);
 };
 
-/**
- * Update inventory item
- */
 const updateItem = async (id, data) => {
   await getItemById(id);
-  return prisma.inventoryItem.update({ where: { id }, data });
+  const sets = [];
+  const params = [];
+  const fields = ['itemCode','itemName','unit','costPerUnit','category','isActive','warehouseId'];
+  for (const f of fields) {
+    if (data[f] !== undefined) {
+      sets.push(`${f} = ?`);
+      params.push(f === 'isActive' ? (data[f] ? 1 : 0) : data[f]);
+    }
+  }
+  if (sets.length) {
+    params.push(id);
+    await db.query(`UPDATE inventory_items SET ${sets.join(', ')}, updatedAt = NOW() WHERE id = ?`, params);
+  }
+  return getItemById(id);
 };
 
-/**
- * Get active items for recipe ingredient selection
- */
 const getActiveItemsForRecipe = async (warehouseId) => {
-  return prisma.inventoryItem.findMany({
-    where: { isActive: true, warehouseId },
-    select: { id: true, itemCode: true, itemName: true, unit: true, costPerUnit: true, category: true },
-    orderBy: { itemName: 'asc' },
-  });
+  const [rows] = await db.query(
+    'SELECT id, itemCode, itemName, unit, costPerUnit, category FROM inventory_items WHERE isActive = 1 AND warehouseId = ? ORDER BY itemName ASC',
+    [warehouseId]
+  );
+  return rows;
 };
 
-/**
- * Get warehouse list
- */
 const getWarehouses = async () => {
-  return prisma.warehouse.findMany({
-    where: { isActive: true },
-    orderBy: { name: 'asc' },
-  });
+  const [rows] = await db.query('SELECT id, name, code FROM warehouses WHERE isActive = 1 ORDER BY name ASC');
+  return rows;
 };
+
+const mapItem = (r) => ({
+  id: r.id, itemCode: r.itemCode, itemName: r.itemName, unit: r.unit,
+  costPerUnit: r.costPerUnit, category: r.category, isActive: !!r.isActive,
+  warehouseId: r.warehouseId, createdAt: r.createdAt, updatedAt: r.updatedAt,
+  warehouse: r.wId ? { id: r.wId, name: r.wName, code: r.wCode } : null,
+});
 
 module.exports = { getItems, getItemById, createItem, updateItem, getActiveItemsForRecipe, getWarehouses };

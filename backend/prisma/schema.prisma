@@ -67,6 +67,37 @@ enum AuditAction {
 }
 
 // ─────────────────────────────────────────────
+// PORTAL: CLIENTS & COMPANIES (defined first for FK ordering)
+// ─────────────────────────────────────────────
+
+model Client {
+  id           String   @id @default(uuid())
+  name         String
+  adminEmail   String   @unique
+  passwordHash String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  companies Company[]
+
+  @@map("clients")
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  code      String
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("companies")
+}
+
+// ─────────────────────────────────────────────
 // USERS
 // ─────────────────────────────────────────────
 
@@ -79,6 +110,11 @@ model User {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  // Portal references (stored as plain strings, no FK constraint)
+  clientId  String?
+  companyId String?
+  kitchenId String?
 
   createdRecipes  Recipe[]        @relation("RecipeCreator")
   approvedRecipes Recipe[]        @relation("RecipeApprover")

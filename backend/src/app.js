@@ -14,6 +14,9 @@ const recipeRoutes = require('./modules/recipe/recipe.routes');
 const inventoryRoutes = require('./modules/inventory/inventory.routes');
 const auditRoutes = require('./modules/audit/audit.routes');
 const menuPlannerRoutes = require('./modules/menu-planner/menu-planner.routes');
+const rootRoutes = require('./modules/root/root.routes');
+const portalRoutes = require('./modules/portal/portal.routes');
+const companyRoutes = require('./modules/company/company.routes');
 
 const app = express();
 
@@ -80,6 +83,9 @@ app.use('/api/recipes', recipeRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/menu-plans', menuPlannerRoutes);
+app.use('/api/root', rootRoutes);
+app.use('/api/portal', portalRoutes);
+app.use('/api/company', companyRoutes);
 
 // ── 404 Handler ────────────────────────────────
 app.use((req, res) => {

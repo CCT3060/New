@@ -144,3 +144,34 @@ export const useDeleteMenuPlanItem = (menuPlanId) => {
     onError: (err) => toast.error(err.message),
   });
 };
+
+export const useMenuReport = (dateFrom, dateTo, enabled = false) =>
+  useQuery({
+    queryKey: ['menu-plans', 'report', dateFrom, dateTo],
+    queryFn: () => menuPlanApi.getReport({ dateFrom, dateTo }),
+    enabled: enabled && !!dateFrom && !!dateTo,
+  });
+
+export const useClearRange = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => menuPlanApi.clearRange(data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: MENU_PLAN_KEYS.all });
+      toast.success(data?.message || 'Plans cleared');
+    },
+    onError: (err) => toast.error(err.message),
+  });
+};
+
+export const useDuplicateWeek = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => menuPlanApi.duplicateWeek(data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: MENU_PLAN_KEYS.all });
+      toast.success(data?.message || 'Week duplicated');
+    },
+    onError: (err) => toast.error(err.message),
+  });
+};

@@ -1,0 +1,45 @@
+const express = require('express');
+const router = express.Router();
+const rateLimit = require('express-rate-limit');
+const ctrl = require('./company.controller');
+const { verifyCompanyToken } = require('./company.service');
+const { AppError } = require('../../middleware/error.middleware');
+
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, message: { success: false, message: 'Too many login attempts, please try again later.' } });
+
+// Middleware: verify company JWT
+const companyAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next(new AppError('Authentication required', 401));
+  }
+  const payload = verifyCompanyToken(authHeader.slice(7));
+  if (!payload) return next(new AppError('Invalid or expired token', 401));
+  req.companyUser = payload; // { userId, companyId, clientId, role }
+  next();
+};
+
+router.post('/login', loginLimiter, ctrl.login);
+
+router.get('/kitchens',       companyAuth, ctrl.listKitchens);
+router.post('/kitchens',      companyAuth, ctrl.createKitchen);
+router.put('/kitchens/:id',   companyAuth, ctrl.updateKitchen);
+router.delete('/kitchens/:id',companyAuth, ctrl.deleteKitchen);
+
+router.get('/stores',         companyAuth, ctrl.listStores);
+router.post('/stores',        companyAuth, ctrl.createStore);
+router.put('/stores/:id',     companyAuth, ctrl.updateStore);
+router.delete('/stores/:id',  companyAuth, ctrl.deleteStore);
+
+router.get('/units',          companyAuth, ctrl.listUnits);
+router.post('/units',         companyAuth, ctrl.createUnit);
+router.put('/units/:id',      companyAuth, ctrl.updateUnit);
+router.delete('/units/:id',   companyAuth, ctrl.deleteUnit);
+
+// Kitchen Users
+router.get('/kitchen-users',        companyAuth, ctrl.listKitchenUsers);
+router.post('/kitchen-users',       companyAuth, ctrl.createKitchenUser);
+router.put('/kitchen-users/:id',    companyAuth, ctrl.updateKitchenUser);
+router.delete('/kitchen-users/:id', companyAuth, ctrl.deleteKitchenUser);
+
+module.exports = router;

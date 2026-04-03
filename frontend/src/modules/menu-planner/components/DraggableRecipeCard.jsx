@@ -4,9 +4,13 @@
  * Also used for existing items inside calendar cells (type = 'item').
  */
 import { useDraggable } from '@dnd-kit/core';
-import MealTypeBadge from './MealTypeBadge';
 
-const FOOD_TYPE_ICONS = { VEG: '🥦', NON_VEG: '🍗', EGG: '🥚', VEGAN: '🌱' };
+const FOOD_BADGE = {
+  VEG:     { bg: '#dcfce7', color: '#16a34a', label: 'V' },
+  NON_VEG: { bg: '#fee2e2', color: '#dc2626', label: 'N' },
+  EGG:     { bg: '#fef9c3', color: '#ca8a04', label: 'E' },
+  VEGAN:   { bg: '#ddd6fe', color: '#7c3aed', label: 'VG' },
+};
 
 export default function DraggableRecipeCard({ recipe, type = 'recipe', item, planId, date, mealType, onRemove, compact = false, mealColors }) {
   const id = type === 'recipe' ? `recipe-${recipe.id}` : `item-${item?.id}`;
@@ -18,11 +22,12 @@ export default function DraggableRecipeCard({ recipe, type = 'recipe', item, pla
   });
 
   const displayRecipe = recipe;
+  const food = FOOD_BADGE[displayRecipe?.foodType];
 
   if (compact) {
     const bg = mealColors?.bg || '#f8fafc';
     const border = mealColors?.border || '#e2e8f0';
-    const dot = mealColors?.dot || '#64748b';
+    const dot = mealColors?.dot || mealColors?.color || '#64748b';
     // Compact version inside calendar cell
     return (
       <div
@@ -87,15 +92,18 @@ export default function DraggableRecipeCard({ recipe, type = 'recipe', item, pla
         transition: 'box-shadow 150ms',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-        <span style={{ fontSize: '1rem' }}>{FOOD_TYPE_ICONS[displayRecipe?.foodType] || ''}</span>
-        <span style={{ fontWeight: 600, fontSize: '0.8rem', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+        <span style={{ fontWeight: 600, fontSize: '0.8rem', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#0f172a' }}>
           {displayRecipe?.recipeName}
         </span>
+        {food && (
+          <span style={{ background: food.bg, color: food.color, borderRadius: 4, padding: '1px 5px', fontSize: '0.63rem', fontWeight: 800, flexShrink: 0 }}>
+            {food.label}
+          </span>
+        )}
       </div>
-      <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-        <MealTypeBadge mealType={displayRecipe?.mealType} />
-        <span style={{ fontSize: '0.7rem', color: 'var(--color-gray-400)', fontFamily: 'var(--font-mono)' }}>
+      <div>
+        <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontFamily: 'monospace' }}>
           {displayRecipe?.recipeCode}
         </span>
       </div>

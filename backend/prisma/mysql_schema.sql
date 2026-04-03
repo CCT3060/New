@@ -218,3 +218,95 @@ CREATE TABLE audit_logs (
   CONSTRAINT fk_audit_user
     FOREIGN KEY (userId) REFERENCES users (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ─────────────────────────────────────────────
+-- PORTAL: CLIENTS
+-- Run this if you created the app DB manually.
+-- The backend manages these via PrismaClient.
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS clients (
+  id           CHAR(36)     NOT NULL DEFAULT (UUID()),
+  name         VARCHAR(255) NOT NULL,
+  adminEmail   VARCHAR(255) NOT NULL,
+  passwordHash VARCHAR(255) NOT NULL,
+  isActive     TINYINT(1)   NOT NULL DEFAULT 1,
+  createdAt    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_clients_adminEmail (adminEmail)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ─────────────────────────────────────────────
+-- PORTAL: COMPANIES
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS companies (
+  id        CHAR(36)     NOT NULL DEFAULT (UUID()),
+  name      VARCHAR(255) NOT NULL,
+  code      VARCHAR(100) NOT NULL,
+  clientId  CHAR(36)     NOT NULL,
+  isActive  TINYINT(1)   NOT NULL DEFAULT 1,
+  createdAt DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_company_client
+    FOREIGN KEY (clientId) REFERENCES clients (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- NOTE: clientId and companyId columns in the users table
+-- were already added automatically by Prisma (db push).
+-- No manual ALTER TABLE needed.
+
+-- ─────────────────────────────────────────────
+-- COMPANY PORTAL: KITCHENS
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS kitchens (
+  id        CHAR(36)     NOT NULL DEFAULT (UUID()),
+  name      VARCHAR(255) NOT NULL,
+  address   TEXT,
+  companyId CHAR(36)     NOT NULL,
+  clientId  CHAR(36)     NOT NULL,
+  isActive  TINYINT(1)   NOT NULL DEFAULT 1,
+  createdAt DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_kitchen_company
+    FOREIGN KEY (companyId) REFERENCES companies (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ─────────────────────────────────────────────
+-- COMPANY PORTAL: STORES (linked to a kitchen)
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS stores (
+  id        CHAR(36)     NOT NULL DEFAULT (UUID()),
+  name      VARCHAR(255) NOT NULL,
+  code      VARCHAR(100) NOT NULL,
+  kitchenId CHAR(36)     NOT NULL,
+  companyId CHAR(36)     NOT NULL,
+  clientId  CHAR(36)     NOT NULL,
+  isActive  TINYINT(1)   NOT NULL DEFAULT 1,
+  createdAt DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_store_kitchen
+    FOREIGN KEY (kitchenId) REFERENCES kitchens (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ─────────────────────────────────────────────
+-- COMPANY PORTAL: UNITS (delivery destinations)
+-- e.g. Infosys, Capgemini, Cognizant, etc.
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS units (
+  id        CHAR(36)     NOT NULL DEFAULT (UUID()),
+  name      VARCHAR(255) NOT NULL,
+  code      VARCHAR(100),
+  address   TEXT,
+  companyId CHAR(36)     NOT NULL,
+  clientId  CHAR(36)     NOT NULL,
+  isActive  TINYINT(1)   NOT NULL DEFAULT 1,
+  createdAt DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_unit_company
+    FOREIGN KEY (companyId) REFERENCES companies (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

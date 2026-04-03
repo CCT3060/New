@@ -365,3 +365,1847 @@
 2026-04-02 11:33:11:3311 [31merror[39m: [31mAppError: Invalid email or password[39m
 2026-04-02 12:27:28:2728 [31merror[39m: [31mAppError: Recipe cannot be edited in 'ACTIVE' status. Create a new version for approved/active recipes.[39m
 2026-04-02 12:27:40:2740 [31merror[39m: [31mAppError: Recipe cannot be edited in 'ACTIVE' status. Create a new version for approved/active recipes.[39m
+2026-04-02 16:48:24:4824 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:48:25:4825 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:48:27:4827 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:48:27:4827 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:48:28:4828 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:52:30:5230 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:52:30:5230 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:52:30:5230 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:52:31:5231 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:52:32:5232 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:52:48:5248 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:52:50:5250 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:53:31:5331 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:53:32:5332 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:53:34:5334 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:53:35:5335 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:55:00:550 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:55:01:551 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:56:25:5625 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:56:31:5631 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:56:44:5644 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:56:45:5645 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:58:36:5836 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:58:37:5837 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:58:38:5838 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:58:41:5841 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:58:45:5845 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:58:46:5846 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:58:49:5849 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:58:50:5850 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:58:58:5858 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:58:59:5859 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:02:592 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:03:593 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:03:593 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:04:594 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:05:595 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:06:596 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:12:5912 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:13:5913 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:16:5916 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:17:5917 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:18:5918 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:19:5919 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:20:5920 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:20:5920 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 16:59:21:5921 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:01:20:120 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:01:20:120 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:01:20:120 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:01:21:121 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:01:40:140 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:01:41:141 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:01:52:152 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:02:06:26 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:03:27:327 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:03:28:328 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:05:57:557 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:05:58:558 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:08:35:835 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:08:36:836 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:08:51:851 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:08:51:851 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:08:52:852 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:08:52:852 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:08:52:852 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:09:00:90 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:09:04:94 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:09:04:94 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:09:05:95 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:09:07:97 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:09:08:98 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:09:08:98 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:09:09:99 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:10:20:1020 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:10:21:1021 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:10:22:1022 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:10:22:1022 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:10:23:1023 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:10:33:1033 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:10:36:1036 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:10:37:1037 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:10:37:1037 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:10:38:1038 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:12:22:1222 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:12:23:1223 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:25:27:2527 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:25:28:2528 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:26:27:2627 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:26:28:2628 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:30:27:3027 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:30:28:3028 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:31:01:311 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:31:01:311 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:31:01:311 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:31:02:312 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:32:12:3212 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:32:13:3213 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:34:48:3448 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:34:49:3449 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:48:23:4823 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:48:24:4824 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:48:35:4835 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:48:36:4836 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:48:57:4857 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:48:58:4858 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:49:05:495 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:49:06:496 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:49:07:497 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:49:08:498 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:49:42:4942 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-02 17:49:43:4943 [31merror[39m: [31mTypeError: Cannot read properties of undefined (reading 'findMany')[39m
+2026-04-03 11:58:11:5811 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 11:58:11:5811 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 11:58:11:5811 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 11:58:11:5811 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 11:59:38:5938 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 11:59:38:5938 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 11:59:46:5946 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 11:59:46:5946 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 11:59:46:5946 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 11:59:46:5946 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 12:03:48:348 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 12:03:48:348 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 12:03:48:348 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 12:03:48:348 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 12:04:18:418 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 12:04:18:418 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.client.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\root\root.service.js:30:39[39m
+
+[31m  27  * List all clients[39m
+[31m  28  */[39m
+[31m  29 const listClients = async () => {[39m
+[31m→ 30   const clients = await prisma.client.findMany({[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           adminEmail: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m             select: {[39m
+[31m               companies: true,[39m
+[31m               users: true[39m
+[31m               ~~~~~[39m
+[31m             }[39m
+[31m           }[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `users` for select statement on model `ClientCountOutputType`. Available options are marked with ?.[39m
+2026-04-03 12:12:02:122 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.client.findUnique()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:16:38[39m
+
+[31m  13  * Client admin login[39m
+[31m  14  */[39m
+[31m  15 const portalLogin = async ({ email, password }) => {[39m
+[31m→ 16   const client = await prisma.client.findUnique({[39m
+[31m         where: {[39m
+[31m           adminEmail: "ca@gmail.com"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           ~~~~[39m
+[31m           adminEmail: true,[39m
+[31m           passwordHash: true,[39m
+[31m           isActive: true,[39m
+[31m       ?   createdAt?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   companies?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `slug` for select statement on model `Client`. Available options are marked with ?.[39m
+2026-04-03 12:12:02:122 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.client.findUnique()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:16:38[39m
+
+[31m  13  * Client admin login[39m
+[31m  14  */[39m
+[31m  15 const portalLogin = async ({ email, password }) => {[39m
+[31m→ 16   const client = await prisma.client.findUnique({[39m
+[31m         where: {[39m
+[31m           adminEmail: "ca@gmail.com"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           ~~~~[39m
+[31m           adminEmail: true,[39m
+[31m           passwordHash: true,[39m
+[31m           isActive: true,[39m
+[31m       ?   createdAt?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   companies?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `slug` for select statement on model `Client`. Available options are marked with ?.[39m
+2026-04-03 12:12:28:1228 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.client.findUnique()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:16:38[39m
+
+[31m  13  * Client admin login[39m
+[31m  14  */[39m
+[31m  15 const portalLogin = async ({ email, password }) => {[39m
+[31m→ 16   const client = await prisma.client.findUnique({[39m
+[31m         where: {[39m
+[31m           adminEmail: "ca@gmail.com"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           ~~~~[39m
+[31m           adminEmail: true,[39m
+[31m           passwordHash: true,[39m
+[31m           isActive: true,[39m
+[31m       ?   createdAt?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   companies?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `slug` for select statement on model `Client`. Available options are marked with ?.[39m
+2026-04-03 12:12:28:1228 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.client.findUnique()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:16:38[39m
+
+[31m  13  * Client admin login[39m
+[31m  14  */[39m
+[31m  15 const portalLogin = async ({ email, password }) => {[39m
+[31m→ 16   const client = await prisma.client.findUnique({[39m
+[31m         where: {[39m
+[31m           adminEmail: "ca@gmail.com"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           ~~~~[39m
+[31m           adminEmail: true,[39m
+[31m           passwordHash: true,[39m
+[31m           isActive: true,[39m
+[31m       ?   createdAt?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   companies?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `slug` for select statement on model `Client`. Available options are marked with ?.[39m
+2026-04-03 12:12:31:1231 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.client.findUnique()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:16:38[39m
+
+[31m  13  * Client admin login[39m
+[31m  14  */[39m
+[31m  15 const portalLogin = async ({ email, password }) => {[39m
+[31m→ 16   const client = await prisma.client.findUnique({[39m
+[31m         where: {[39m
+[31m           adminEmail: "ca@gmail.com"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           ~~~~[39m
+[31m           adminEmail: true,[39m
+[31m           passwordHash: true,[39m
+[31m           isActive: true,[39m
+[31m       ?   createdAt?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   companies?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `slug` for select statement on model `Client`. Available options are marked with ?.[39m
+2026-04-03 12:12:31:1231 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.client.findUnique()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:16:38[39m
+
+[31m  13  * Client admin login[39m
+[31m  14  */[39m
+[31m  15 const portalLogin = async ({ email, password }) => {[39m
+[31m→ 16   const client = await prisma.client.findUnique({[39m
+[31m         where: {[39m
+[31m           adminEmail: "ca@gmail.com"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           slug: true,[39m
+[31m           ~~~~[39m
+[31m           adminEmail: true,[39m
+[31m           passwordHash: true,[39m
+[31m           isActive: true,[39m
+[31m       ?   createdAt?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   companies?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `slug` for select statement on model `Client`. Available options are marked with ?.[39m
+2026-04-03 12:14:00:140 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.company.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:36:25[39m
+
+[31m  33  * List companies for a client[39m
+[31m  34  */[39m
+[31m  35 const listCompanies = async (clientId) => {[39m
+[31m→ 36   return prisma.company.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           code: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m           ~~~~~~[39m
+[31m             select: {[39m
+[31m               users: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   client?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `_count` for select statement on model `Company`. Available options are marked with ?.[39m
+2026-04-03 12:14:00:140 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.company.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:36:25[39m
+
+[31m  33  * List companies for a client[39m
+[31m  34  */[39m
+[31m  35 const listCompanies = async (clientId) => {[39m
+[31m→ 36   return prisma.company.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           code: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m           ~~~~~~[39m
+[31m             select: {[39m
+[31m               users: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   client?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `_count` for select statement on model `Company`. Available options are marked with ?.[39m
+2026-04-03 12:14:00:140 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:85:22[39m
+
+[31m  82  */[39m
+[31m  83 const listUsers = async (clientId, companyId) => {[39m
+[31m  84   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 85   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:14:00:140 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:85:22[39m
+
+[31m  82  */[39m
+[31m  83 const listUsers = async (clientId, companyId) => {[39m
+[31m  84   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 85   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:14:00:140 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.company.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:36:25[39m
+
+[31m  33  * List companies for a client[39m
+[31m  34  */[39m
+[31m  35 const listCompanies = async (clientId) => {[39m
+[31m→ 36   return prisma.company.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           code: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m           ~~~~~~[39m
+[31m             select: {[39m
+[31m               users: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   client?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `_count` for select statement on model `Company`. Available options are marked with ?.[39m
+2026-04-03 12:14:00:140 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.company.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:36:25[39m
+
+[31m  33  * List companies for a client[39m
+[31m  34  */[39m
+[31m  35 const listCompanies = async (clientId) => {[39m
+[31m→ 36   return prisma.company.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           code: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m           ~~~~~~[39m
+[31m             select: {[39m
+[31m               users: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   client?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `_count` for select statement on model `Company`. Available options are marked with ?.[39m
+2026-04-03 12:14:00:140 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:85:22[39m
+
+[31m  82  */[39m
+[31m  83 const listUsers = async (clientId, companyId) => {[39m
+[31m  84   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 85   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:14:00:140 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:85:22[39m
+
+[31m  82  */[39m
+[31m  83 const listUsers = async (clientId, companyId) => {[39m
+[31m  84   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 85   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:14:34:1434 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.company.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:36:25[39m
+
+[31m  33  * List companies for a client[39m
+[31m  34  */[39m
+[31m  35 const listCompanies = async (clientId) => {[39m
+[31m→ 36   return prisma.company.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           code: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m           ~~~~~~[39m
+[31m             select: {[39m
+[31m               users: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   client?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `_count` for select statement on model `Company`. Available options are marked with ?.[39m
+2026-04-03 12:14:34:1434 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.company.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:36:25[39m
+
+[31m  33  * List companies for a client[39m
+[31m  34  */[39m
+[31m  35 const listCompanies = async (clientId) => {[39m
+[31m→ 36   return prisma.company.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           code: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m           ~~~~~~[39m
+[31m             select: {[39m
+[31m               users: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   client?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `_count` for select statement on model `Company`. Available options are marked with ?.[39m
+2026-04-03 12:15:14:1514 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.company.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:36:25[39m
+
+[31m  33  * List companies for a client[39m
+[31m  34  */[39m
+[31m  35 const listCompanies = async (clientId) => {[39m
+[31m→ 36   return prisma.company.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           code: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m           ~~~~~~[39m
+[31m             select: {[39m
+[31m               users: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   client?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `_count` for select statement on model `Company`. Available options are marked with ?.[39m
+2026-04-03 12:15:14:1514 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.company.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:36:25[39m
+
+[31m  33  * List companies for a client[39m
+[31m  34  */[39m
+[31m  35 const listCompanies = async (clientId) => {[39m
+[31m→ 36   return prisma.company.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           code: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m           ~~~~~~[39m
+[31m             select: {[39m
+[31m               users: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   client?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `_count` for select statement on model `Company`. Available options are marked with ?.[39m
+2026-04-03 12:15:14:1514 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:85:22[39m
+
+[31m  82  */[39m
+[31m  83 const listUsers = async (clientId, companyId) => {[39m
+[31m  84   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 85   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:15:14:1514 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:85:22[39m
+
+[31m  82  */[39m
+[31m  83 const listUsers = async (clientId, companyId) => {[39m
+[31m  84   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 85   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:15:14:1514 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.company.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:36:25[39m
+
+[31m  33  * List companies for a client[39m
+[31m  34  */[39m
+[31m  35 const listCompanies = async (clientId) => {[39m
+[31m→ 36   return prisma.company.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           code: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m           ~~~~~~[39m
+[31m             select: {[39m
+[31m               users: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   client?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `_count` for select statement on model `Company`. Available options are marked with ?.[39m
+2026-04-03 12:15:14:1514 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.company.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:36:25[39m
+
+[31m  33  * List companies for a client[39m
+[31m  34  */[39m
+[31m  35 const listCompanies = async (clientId) => {[39m
+[31m→ 36   return prisma.company.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           code: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           _count: {[39m
+[31m           ~~~~~~[39m
+[31m             select: {[39m
+[31m               users: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   client?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `_count` for select statement on model `Company`. Available options are marked with ?.[39m
+2026-04-03 12:15:14:1514 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:85:22[39m
+
+[31m  82  */[39m
+[31m  83 const listUsers = async (clientId, companyId) => {[39m
+[31m  84   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 85   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:15:14:1514 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:85:22[39m
+
+[31m  82  */[39m
+[31m  83 const listUsers = async (clientId, companyId) => {[39m
+[31m  84   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 85   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:16:35:1635 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:82:22[39m
+
+[31m  79  */[39m
+[31m  80 const listUsers = async (clientId, companyId) => {[39m
+[31m  81   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 82   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:16:35:1635 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:82:22[39m
+
+[31m  79  */[39m
+[31m  80 const listUsers = async (clientId, companyId) => {[39m
+[31m  81   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 82   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:16:35:1635 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:82:22[39m
+
+[31m  79  */[39m
+[31m  80 const listUsers = async (clientId, companyId) => {[39m
+[31m  81   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 82   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:16:35:1635 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:82:22[39m
+
+[31m  79  */[39m
+[31m  80 const listUsers = async (clientId, companyId) => {[39m
+[31m  81   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 82   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:17:24:1724 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:82:22[39m
+
+[31m  79  */[39m
+[31m  80 const listUsers = async (clientId, companyId) => {[39m
+[31m  81   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 82   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:17:24:1724 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:82:22[39m
+
+[31m  79  */[39m
+[31m  80 const listUsers = async (clientId, companyId) => {[39m
+[31m  81   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 82   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:29:50:2950 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:82:22[39m
+
+[31m  79  */[39m
+[31m  80 const listUsers = async (clientId, companyId) => {[39m
+[31m  81   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 82   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:29:50:2950 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:82:22[39m
+
+[31m  79  */[39m
+[31m  80 const listUsers = async (clientId, companyId) => {[39m
+[31m  81   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 82   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:29:50:2950 [31merror[39m: [31mPrisma error: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:82:22[39m
+
+[31m  79  */[39m
+[31m  80 const listUsers = async (clientId, companyId) => {[39m
+[31m  81   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 82   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:29:50:2950 [31merror[39m: [31mPrismaClientValidationError: [39m
+[31mInvalid `prisma.user.findMany()` invocation in[39m
+[31mC:\Users\PariksheetMoghekar\OneDrive - Harsh Sales Corporation\Desktop\New folder\recipe-management\backend\src\modules\portal\portal.service.js:82:22[39m
+
+[31m  79  */[39m
+[31m  80 const listUsers = async (clientId, companyId) => {[39m
+[31m  81   const where = { clientId, ...(companyId ? { companyId } : {}) };[39m
+[31m→ 82   return prisma.user.findMany({[39m
+[31m         where: {[39m
+[31m           clientId: "37389f0c-66c8-4a7a-93c4-1d9205170f22"[39m
+[31m         },[39m
+[31m         orderBy: {[39m
+[31m           createdAt: "desc"[39m
+[31m         },[39m
+[31m         select: {[39m
+[31m           id: true,[39m
+[31m           name: true,[39m
+[31m           email: true,[39m
+[31m           role: true,[39m
+[31m           isActive: true,[39m
+[31m           createdAt: true,[39m
+[31m           company: {[39m
+[31m           ~~~~~~~[39m
+[31m             select: {[39m
+[31m               id: true,[39m
+[31m               name: true[39m
+[31m             }[39m
+[31m           },[39m
+[31m       ?   passwordHash?: true,[39m
+[31m       ?   updatedAt?: true,[39m
+[31m       ?   clientId?: true,[39m
+[31m       ?   companyId?: true,[39m
+[31m       ?   createdRecipes?: true,[39m
+[31m       ?   approvedRecipes?: true,[39m
+[31m       ?   recipeVersions?: true,[39m
+[31m       ?   auditLogs?: true,[39m
+[31m       ?   menuPlans?: true,[39m
+[31m       ?   _count?: true[39m
+[31m         }[39m
+[31m       })[39m
+
+[31mUnknown field `company` for select statement on model `User`. Available options are marked with ?.[39m
+2026-04-03 12:32:32:3232 [31merror[39m: [31mMySQL pool error:[39m
+2026-04-03 12:34:52:3452 [31merror[39m: [31mError: Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='[39m
+2026-04-03 12:34:52:3452 [31merror[39m: [31mError: Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='[39m
+2026-04-03 12:56:18:5618 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-03 12:56:21:5621 [31merror[39m: [31mError: Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='[39m
+2026-04-03 12:56:21:5621 [31merror[39m: [31mError: Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='[39m
+2026-04-03 12:57:13:5713 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-03 13:02:22:222 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-03 13:02:24:224 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-03 13:02:35:235 [31merror[39m: [31mError: Data truncated for column 'role' at row 1[39m
+2026-04-03 13:06:51:651 [31merror[39m: [31mError: Data truncated for column 'role' at row 1[39m
+2026-04-03 13:06:57:657 [31merror[39m: [31mError: Data truncated for column 'role' at row 1[39m
+2026-04-03 13:08:16:816 [31merror[39m: [31mError: Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='[39m
+2026-04-03 13:08:40:840 [31merror[39m: [31mError: Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='[39m
+2026-04-03 13:08:40:840 [31merror[39m: [31mError: Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='[39m
+2026-04-03 13:09:47:947 [31merror[39m: [31mMySQL pool error:[39m
+2026-04-03 14:25:01:251 [31merror[39m: [31mError: Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='[39m
+2026-04-03 14:25:01:251 [31merror[39m: [31mError: Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='[39m
+2026-04-03 16:09:25:925 [31merror[39m: [31mMySQL pool error:[39m
+2026-04-03 16:23:01:231 [31merror[39m: [31mAppError: Invalid email or password[39m

@@ -78,13 +78,16 @@ module.exports = {
   removeItem,
   dropRecipeOnSlot,
   moveItemBetweenSlots,
+  getReport,
+  clearDateRangePlans,
+  duplicateWeek,
 };
 
 async function dropRecipeOnSlot(req, res, next) {
   try {
     const { planDate, mealType, warehouseId, recipeId, servings } = req.body;
-    if (!planDate || !mealType || !warehouseId || !recipeId) {
-      return res.status(400).json({ success: false, message: 'planDate, mealType, warehouseId and recipeId are required' });
+    if (!planDate || !mealType || !recipeId) {
+      return res.status(400).json({ success: false, message: 'planDate, mealType and recipeId are required' });
     }
     const result = await menuPlannerService.dropRecipeOnSlot(
       { planDate, mealType, warehouseId, recipeId, servings },
@@ -97,13 +100,49 @@ async function dropRecipeOnSlot(req, res, next) {
 async function moveItemBetweenSlots(req, res, next) {
   try {
     const { itemId, sourcePlanId, targetDate, targetMealType, warehouseId } = req.body;
-    if (!itemId || !sourcePlanId || !targetDate || !targetMealType || !warehouseId) {
-      return res.status(400).json({ success: false, message: 'itemId, sourcePlanId, targetDate, targetMealType and warehouseId are required' });
+    if (!itemId || !sourcePlanId || !targetDate || !targetMealType) {
+      return res.status(400).json({ success: false, message: 'itemId, sourcePlanId, targetDate and targetMealType are required' });
     }
     await menuPlannerService.moveItemBetweenSlots(
       { itemId, sourcePlanId, targetDate, targetMealType, warehouseId },
       req.user.id
     );
     return success(res, {}, 'Recipe moved successfully');
+  } catch (err) { next(err); }
+}
+
+async function getReport(req, res, next) {
+  try {
+    const { dateFrom, dateTo } = req.query;
+    if (!dateFrom || !dateTo) {
+      return res.status(400).json({ success: false, message: 'dateFrom and dateTo are required' });
+    }
+    const report = await menuPlannerService.getReport(dateFrom, dateTo);
+    return success(res, report, 'Report generated');
+  } catch (err) { next(err); }
+}
+
+async function clearDateRangePlans(req, res, next) {
+  try {
+    const { dateFrom, dateTo } = req.body;
+    if (!dateFrom || !dateTo) {
+      return res.status(400).json({ success: false, message: 'dateFrom and dateTo are required' });
+    }
+    if (!['ADMIN', 'OPS_MANAGER', 'KITCHEN_MANAGER'].includes(req.user.role)) {
+      return forbidden(res, 'Insufficient permissions');
+    }
+    const result = await menuPlannerService.clearDateRangePlans(dateFrom, dateTo);
+    return success(res, result, `Cleared ${result.cleared} plan(s)`);
+  } catch (err) { next(err); }
+}
+
+async function duplicateWeek(req, res, next) {
+  try {
+    const { sourceFrom, sourceTo, targetFrom } = req.body;
+    if (!sourceFrom || !sourceTo || !targetFrom) {
+      return res.status(400).json({ success: false, message: 'sourceFrom, sourceTo and targetFrom are required' });
+    }
+    const result = await menuPlannerService.duplicateWeek(sourceFrom, sourceTo, targetFrom, req.user.id);
+    return success(res, result, `Duplicated ${result.created} plan(s)`);
   } catch (err) { next(err); }
 }

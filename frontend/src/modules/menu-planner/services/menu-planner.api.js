@@ -77,6 +77,19 @@ export const menuPlanApi = {
     const res = await api.post('/menu-plans/calendar/move', data);
     return res.data ?? res;
   },
+  // Report & week management
+  getReport: async (params = {}) => {
+    const res = await api.get('/menu-plans/report', { params });
+    return res.data ?? res;
+  },
+  clearRange: async (data) => {
+    const res = await api.post('/menu-plans/clear-range', data);
+    return res.data ?? res;
+  },
+  duplicateWeek: async (data) => {
+    const res = await api.post('/menu-plans/duplicate-week', data);
+    return res.data ?? res;
+  },
 };
 
 export const recipePickerApi = {

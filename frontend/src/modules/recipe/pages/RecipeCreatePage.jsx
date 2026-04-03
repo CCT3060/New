@@ -11,7 +11,6 @@ import { recipeApi } from '../services/recipe.api';
 const fmtCost = (n) =>
   `Rs. ${parseFloat(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'BEVERAGE', 'DESSERT'];
 const FOOD_TYPES = ['VEG', 'NON_VEG', 'EGG', 'VEGAN'];
 const FOOD_TYPE_COLORS = { VEG: '#16a34a', NON_VEG: '#dc2626', EGG: '#d97706', VEGAN: '#059669' };
 
@@ -29,9 +28,7 @@ export default function RecipeCreatePage() {
 
   const [fields, setFields] = useState({
     recipeName: '',
-    mealType: 'LUNCH',
     foodType: 'VEG',
-    cuisineType: '',
     standardPax: 4,
     yieldQty: '',
     yieldUnit: 'kg',
@@ -112,7 +109,6 @@ export default function RecipeCreatePage() {
   const validate = () => {
     const e = {};
     if (!fields.recipeName.trim()) e.recipeName = 'Recipe name is required';
-    if (!fields.mealType) e.mealType = 'Meal type is required';
     if (!fields.foodType) e.foodType = 'Food type is required';
     if (!fields.standardPax || parseInt(fields.standardPax) < 1)
       e.standardPax = 'Standard pax must be at least 1';
@@ -141,9 +137,7 @@ export default function RecipeCreatePage() {
       const payload = {
         recipeCode: code,
         recipeName: fields.recipeName.trim(),
-        mealType: fields.mealType,
         foodType: fields.foodType,
-        cuisineType: fields.cuisineType.trim() || undefined,
         standardPax: parseInt(fields.standardPax) || 4,
         yieldQty: parseFloat(fields.yieldQty),
         yieldUnit: fields.yieldUnit.trim(),
@@ -166,8 +160,19 @@ export default function RecipeCreatePage() {
             toast.error(`Failed to add ${ing.name}: ${ingErr.message}`);
           }
         }
-        toast.success('Recipe saved successfully!');
-        navigate('/recipes');
+        toast.success('Recipe saved! You can add another recipe.');
+        // Reset form so user can immediately add another recipe
+        setFields({
+          recipeName: '',
+          foodType: 'VEG',
+          standardPax: 4,
+          yieldQty: '',
+          yieldUnit: 'kg',
+          warehouseId: '',
+        });
+        setIngredients([]);
+        setErrors({});
+        setSearch('');
       }
     } catch (err) {
       // Parse backend field-level validation errors
@@ -294,8 +299,8 @@ export default function RecipeCreatePage() {
         {/* Recipe fields */}
         <div style={{ padding: '16px 24px 14px', background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
 
-          {/* Row 1: Name, Meal Type, Food Type, Cuisine */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 14, marginBottom: 14 }}>
+          {/* Row 1: Name, Food Type */}
+          <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: 14, marginBottom: 14 }}>
             <div>
               <label style={labelStyle}>
                 Recipe Name <span style={{ color: '#dc2626' }}>*</span>
@@ -310,17 +315,6 @@ export default function RecipeCreatePage() {
               <ErrorMsg msg={errors.recipeName} />
             </div>
             <div>
-              <label style={labelStyle}>Meal Type <span style={{ color: '#dc2626' }}>*</span></label>
-              <select
-                value={fields.mealType}
-                onChange={(e) => setField('mealType', e.target.value)}
-                style={inputStyle('mealType')}
-              >
-                {MEAL_TYPES.map((m) => <option key={m} value={m}>{m}</option>)}
-              </select>
-              <ErrorMsg msg={errors.mealType} />
-            </div>
-            <div>
               <label style={labelStyle}>Food Type <span style={{ color: '#dc2626' }}>*</span></label>
               <select
                 value={fields.foodType}
@@ -330,16 +324,6 @@ export default function RecipeCreatePage() {
                 {FOOD_TYPES.map((t) => <option key={t} value={t}>{t.replace('_', ' ')}</option>)}
               </select>
               <ErrorMsg msg={errors.foodType} />
-            </div>
-            <div>
-              <label style={labelStyle}>Cuisine Type <span style={{ fontWeight: 400, color: '#94a3b8' }}>(optional)</span></label>
-              <input
-                type="text"
-                placeholder="e.g. North Indian"
-                value={fields.cuisineType}
-                onChange={(e) => setField('cuisineType', e.target.value)}
-                style={inputStyle('cuisineType')}
-              />
             </div>
           </div>
 

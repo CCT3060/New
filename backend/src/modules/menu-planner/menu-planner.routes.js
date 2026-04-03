@@ -8,6 +8,11 @@ router.use(authenticate);
 router.post('/calendar/drop', c.dropRecipeOnSlot);
 router.post('/calendar/move', c.moveItemBetweenSlots);
 
+// Report & week management
+router.get('/report', c.getReport);
+router.post('/clear-range', c.clearDateRangePlans);
+router.post('/duplicate-week', c.duplicateWeek);
+
 router.get('/', c.listMenuPlans);
 router.post('/', c.createMenuPlan);
 router.get('/:id', c.getMenuPlan);

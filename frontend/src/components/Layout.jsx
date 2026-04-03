@@ -3,11 +3,12 @@ import { useAuth } from '../contexts/AuthContext';
 
 const NAV_ITEMS = [
   { label: 'Recipes', path: '/recipes', icon: '📋' },
+  { label: 'Recipe Report', path: '/recipe-report', icon: '📊' },
   { label: 'Menu Planner', path: '/menu-planner', icon: '📅' },
 ];
 
 export default function Layout() {
-  const { user, logout } = useAuth();
+  const { user, kitchen, logout } = useAuth();
   const location = useLocation();
 
   // Build breadcrumb
@@ -22,7 +23,7 @@ export default function Layout() {
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <h2>Central Kitchen</h2>
+          <h2>{kitchen?.name || 'Central Kitchen'}</h2>
           <p>Recipe Management</p>
         </div>
         <nav className="sidebar-nav">

@@ -73,15 +73,6 @@ export default function LoginPage() {
             {loading ? <><span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> Signing in...</> : 'Sign In'}
           </button>
         </form>
-
-        <div style={{ marginTop: 24, padding: 16, background: 'var(--color-gray-50)', borderRadius: 6, fontSize: '0.8rem', color: 'var(--color-gray-600)' }}>
-          <strong>Demo credentials (all use Password@123):</strong>
-          <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <span>Admin: admin@centralkitchen.com</span>
-            <span>Ops Manager: ops@centralkitchen.com</span>
-            <span>Head Chef: chef@centralkitchen.com</span>
-          </div>
-        </div>
       </div>
     </div>
   );

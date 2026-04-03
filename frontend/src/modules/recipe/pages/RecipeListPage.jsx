@@ -180,7 +180,7 @@ export default function RecipeListPage() {
                     {recipe.recipeCode}
                   </span>
                   <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-const MEAL_ICONS = {
+                    {MEAL_ICONS[recipe.mealType] || recipe.mealType}
                   </span>
                 </div>
 

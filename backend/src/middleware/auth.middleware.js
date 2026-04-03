@@ -1,20 +1,15 @@
 const jwt = require('jsonwebtoken');
-const prisma = require('../db/prisma');
+const db = require('../db/mysql');
 const { unauthorized } = require('../utils/response');
 
-/**
- * Verify JWT token and attach user to request
- */
 const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return unauthorized(res, 'No authentication token provided');
     }
 
     const token = authHeader.split(' ')[1];
-
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -25,16 +20,16 @@ const authenticate = async (req, res, next) => {
       return unauthorized(res, 'Invalid authentication token');
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      select: { id: true, name: true, email: true, role: true, isActive: true },
-    });
+    const [[user]] = await db.query(
+      'SELECT id, name, email, role, isActive FROM users WHERE id = ?',
+      [decoded.userId]
+    );
 
     if (!user || !user.isActive) {
       return unauthorized(res, 'User account not found or deactivated');
     }
 
-    req.user = user;
+    req.user = { ...user, isActive: !!user.isActive };
     next();
   } catch (err) {
     next(err);

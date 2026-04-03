@@ -27,6 +27,8 @@ export function CompanyAuthProvider({ children }) {
     if (!data.success) throw new Error(data.message || 'Login failed');
     localStorage.setItem('company_token', data.data.token);
     localStorage.setItem('company_user', JSON.stringify({ ...data.data.user, company: data.data.company }));
+    localStorage.setItem('ck_token', data.data.innerToken);
+    localStorage.setItem('ck_user', JSON.stringify(data.data.user));
     setCompanyUser({ ...data.data.user, company: data.data.company });
     return data.data;
   }, []);
@@ -34,6 +36,8 @@ export function CompanyAuthProvider({ children }) {
   const logout = useCallback(() => {
     localStorage.removeItem('company_token');
     localStorage.removeItem('company_user');
+    localStorage.removeItem('ck_token');
+    localStorage.removeItem('ck_user');
     setCompanyUser(null);
   }, []);
 

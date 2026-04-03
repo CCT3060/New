@@ -9,6 +9,9 @@ const COMPANY_JWT_SECRET = process.env.JWT_SECRET + '_company';
 const generateCompanyToken = (userId, companyId, clientId) =>
   jwt.sign({ userId, companyId, clientId, role: 'COMPANY_ADMIN' }, COMPANY_JWT_SECRET, { expiresIn: '8h' });
 
+const generateInnerToken = (userId, role) =>
+  jwt.sign({ userId, role }, process.env.JWT_SECRET, { expiresIn: '8h' });
+
 // ─── Login (uses users table — user must have companyId) ──────────────────────
 const companyLogin = async ({ email, password }) => {
   const [[user]] = await db.query(
@@ -29,8 +32,10 @@ const companyLogin = async ({ email, password }) => {
   if (!company || !company.isActive) throw new AppError('Company account is inactive.', 401);
 
   const token = generateCompanyToken(user.id, user.companyId, user.clientId);
+  const innerToken = generateInnerToken(user.id, user.role);
   return {
     token,
+    innerToken,
     user: { id: user.id, name: user.name, email: user.email, role: user.role },
     company: { ...company, isActive: !!company.isActive },
   };

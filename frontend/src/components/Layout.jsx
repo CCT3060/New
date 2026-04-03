@@ -10,6 +10,7 @@ const NAV_ITEMS = [
 export default function Layout() {
   const { user, kitchen, logout } = useAuth();
   const location = useLocation();
+  const isEmbed = window.self !== window.top;
 
   // Build breadcrumb
   const parts = location.pathname.split('/').filter(Boolean);
@@ -17,6 +18,14 @@ export default function Layout() {
     label: isUuid(part) ? 'Detail' : capitalize(part.replace(/-/g, ' ')),
     path: '/' + parts.slice(0, i + 1).join('/'),
   }));
+
+  if (isEmbed) {
+    return (
+      <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
+        <Outlet />
+      </div>
+    );
+  }
 
   return (
     <div className="app-layout">
@@ -46,6 +55,14 @@ export default function Layout() {
             <strong>{user?.name}</strong>
             <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{formatRole(user?.role)}</span>
           </div>
+          {localStorage.getItem('company_token') && (
+            <a
+              href="/company/dashboard"
+              style={{ display: 'block', marginTop: 10, padding: '8px 12px', borderRadius: 8, background: '#f0fdf4', color: '#059669', fontSize: '0.78rem', fontWeight: 600, textDecoration: 'none', textAlign: 'center', border: '1.5px solid #bbf7d0' }}
+            >
+              ← Company Portal
+            </a>
+          )}
           <button
             className="btn btn-sm btn-secondary"
             style={{ marginTop: 10, width: '100%' }}

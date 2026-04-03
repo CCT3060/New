@@ -201,73 +201,128 @@ export default function CompanyDashboardPage() {
 
   const handleLogout = () => { logout(); navigate('/company'); };
 
-  const TABS = [
-    { key: 'kitchens', label: '🍳 Kitchens', count: kitchens.length },
-    { key: 'stores', label: '🏪 Stores', count: stores.length },
-    { key: 'units', label: '🏢 Delivery Units', count: units.length },
-    { key: 'users', label: '👥 Kitchen Users', count: kitchenUsers.length },
+  const NAV_MANAGEMENT = [
+    { key: 'kitchens', icon: '🍳', label: 'Kitchens', count: kitchens.length },
+    { key: 'stores', icon: '🏪', label: 'Stores', count: stores.length },
+    { key: 'units', icon: '🏢', label: 'Delivery Units', count: units.length },
+    { key: 'users', icon: '👥', label: 'Kitchen Users', count: kitchenUsers.length },
   ];
 
+  const NAV_APP = [
+    { key: 'recipes', icon: '📋', label: 'Recipes' },
+    { key: 'report', icon: '📊', label: 'Recipe Report' },
+    { key: 'menu-planner', icon: '📅', label: 'Menu Planner' },
+  ];
+
+  const APP_TAB_SRC = {
+    recipes: '/recipes',
+    report: '/recipe-report',
+    'menu-planner': '/menu-planner',
+  };
+
+  const TAB_LABELS = {
+    kitchens: '🍳 Kitchens', stores: '🏪 Stores', units: '🏢 Delivery Units', users: '👥 Kitchen Users',
+    recipes: '📋 Recipes', report: '📊 Recipe Report', 'menu-planner': '📅 Menu Planner',
+  };
+
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
-      {/* Topbar */}
-      <header style={{
-        background: 'linear-gradient(135deg, #064e3b, #065f46)',
-        color: '#fff', padding: '0 28px', height: 60,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc' }}>
+      {/* ── Sidebar ── */}
+      <aside style={{
+        width: 240, flexShrink: 0,
+        background: 'linear-gradient(180deg, #064e3b 0%, #065f46 100%)',
+        display: 'flex', flexDirection: 'column',
+        position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 100,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: '1.3rem' }}>🏭</span>
-          <div>
-            <span style={{ fontWeight: 800, fontSize: '1rem' }}>Company Portal</span>
-            <span style={{ marginLeft: 12, fontSize: '0.75rem', opacity: 0.6 }}>
-              {companyUser?.company?.name}
-            </span>
+        {/* Brand */}
+        <div style={{ padding: '20px 20px 14px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+            <span style={{ fontSize: '1.4rem' }}>🏭</span>
+            <span style={{ color: '#fff', fontWeight: 800, fontSize: '0.95rem' }}>Company Portal</span>
           </div>
+          <span style={{ color: '#6ee7b7', fontSize: '0.72rem', fontWeight: 500 }}>{companyUser?.company?.name}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>{companyUser?.name}</span>
-          <a href="/" style={{ fontSize: '0.8rem', color: '#6ee7b7', textDecoration: 'none', fontWeight: 500 }}>Open App →</a>
-          <button onClick={handleLogout} style={{ padding: '6px 16px', borderRadius: 7, border: '1.5px solid rgba(255,255,255,0.25)', background: 'transparent', color: '#fff', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 500 }}>
+
+        {/* Nav */}
+        <nav style={{ flex: 1, padding: '10px 0', overflowY: 'auto' }}>
+          <div style={{ padding: '8px 16px 3px', fontSize: '0.6rem', fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Management</div>
+          {NAV_MANAGEMENT.map(item => (
+            <button key={item.key} onClick={() => setTab(item.key)} style={{
+              display: 'flex', alignItems: 'center', gap: 9, width: '100%',
+              padding: '9px 16px', border: 'none',
+              background: tab === item.key ? 'rgba(255,255,255,0.15)' : 'transparent',
+              color: tab === item.key ? '#fff' : 'rgba(255,255,255,0.65)',
+              cursor: 'pointer', fontSize: '0.83rem', fontWeight: tab === item.key ? 600 : 400,
+              borderLeft: tab === item.key ? '3px solid #6ee7b7' : '3px solid transparent',
+              textAlign: 'left',
+            }}>
+              <span>{item.icon}</span>
+              <span style={{ flex: 1 }}>{item.label}</span>
+              <span style={{ fontSize: '0.68rem', background: 'rgba(255,255,255,0.15)', padding: '1px 7px', borderRadius: 10, color: 'rgba(255,255,255,0.7)' }}>{item.count}</span>
+            </button>
+          ))}
+
+          <div style={{ padding: '14px 16px 3px', fontSize: '0.6rem', fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Recipes &amp; Menu</div>
+          <div style={{ padding: '6px 10px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {NAV_APP.map(item => (
+              <button key={item.key} onClick={() => setTab(item.key)} style={{
+                display: 'flex', alignItems: 'center', gap: 9,
+                padding: '9px 12px', border: 'none', borderRadius: 9,
+                background: tab === item.key ? '#ecfdf5' : 'rgba(255,255,255,0.1)',
+                color: tab === item.key ? '#065f46' : 'rgba(255,255,255,0.85)',
+                cursor: 'pointer', fontSize: '0.83rem', fontWeight: tab === item.key ? 700 : 500,
+                textAlign: 'left', boxShadow: tab === item.key ? '0 1px 4px rgba(0,0,0,0.12)' : 'none',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { if (tab !== item.key) { e.currentTarget.style.background = 'rgba(255,255,255,0.18)'; } }}
+              onMouseLeave={e => { if (tab !== item.key) { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; } }}
+              >
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+
+        {/* Footer */}
+        <div style={{ padding: '14px 16px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.8rem', fontWeight: 600, marginBottom: 2 }}>{companyUser?.name}</div>
+          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.7rem', marginBottom: 12 }}>{companyUser?.role?.replace(/_/g, ' ')}</div>
+          <button onClick={handleLogout} style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1.5px solid rgba(255,255,255,0.2)', background: 'transparent', color: '#fff', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}>
             Sign Out
           </button>
         </div>
-      </header>
+      </aside>
 
-      <div style={{ padding: '28px 36px', maxWidth: 1100, margin: '0 auto' }}>
-        {/* Stats */}
-        <div style={{ display: 'flex', gap: 14, marginBottom: 28 }}>
-          {[  
-            { label: 'Kitchens', value: kitchens.length, color: '#059669', bg: '#f0fdf4' },
-            { label: 'Stores', value: stores.length, color: '#d97706', bg: '#fffbeb' },
-            { label: 'Delivery Units', value: units.length, color: '#7c3aed', bg: '#ede9fe' },
-            { label: 'Kitchen Users', value: kitchenUsers.length, color: '#0284c7', bg: '#f0f9ff' },
-          ].map(s => (
-            <div key={s.label} style={{ ...cardStyle, padding: '16px 24px', background: s.bg, border: `1px solid ${s.color}22` }}>
-              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: s.color }}>{s.value}</div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
+      {/* ── Main content ── */}
+      <div style={{ marginLeft: 240, flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        {/* Topbar */}
+        <header style={{ background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '0 28px', height: 54, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
+          <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>{TAB_LABELS[tab] || tab}</span>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {[
+              { label: 'Kitchens', value: kitchens.length, color: '#059669', bg: '#f0fdf4' },
+              { label: 'Stores', value: stores.length, color: '#d97706', bg: '#fffbeb' },
+              { label: 'Delivery Units', value: units.length, color: '#7c3aed', bg: '#ede9fe' },
+              { label: 'Users', value: kitchenUsers.length, color: '#0284c7', bg: '#f0f9ff' },
+            ].map(s => (
+              <div key={s.label} style={{ background: s.bg, borderRadius: 8, padding: '4px 11px', display: 'flex', gap: 5, alignItems: 'center' }}>
+                <span style={{ fontWeight: 700, color: s.color, fontSize: '0.82rem' }}>{s.value}</span>
+                <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>{s.label}</span>
+              </div>
+            ))}
+          </div>
+        </header>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: 0, marginBottom: 20, borderBottom: '2px solid #e2e8f0' }}>
-          {TABS.map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)} style={{
-              padding: '10px 22px', border: 'none', background: 'transparent',
-              fontWeight: tab === t.key ? 700 : 400,
-              color: tab === t.key ? '#059669' : '#64748b',
-              borderBottom: tab === t.key ? '2.5px solid #059669' : '2.5px solid transparent',
-              cursor: 'pointer', fontSize: '0.9rem', marginBottom: -2,
-            }}>
-              {t.label}
-              <span style={{ marginLeft: 6, fontSize: '0.72rem', background: tab === t.key ? '#f0fdf4' : '#f1f5f9', color: tab === t.key ? '#059669' : '#94a3b8', padding: '1px 7px', borderRadius: 10, fontWeight: 600 }}>
-                {t.count}
-              </span>
-            </button>
-          ))}
-        </div>
-
+        {APP_TAB_SRC[tab] && (
+          <iframe
+            key={tab}
+            src={APP_TAB_SRC[tab]}
+            style={{ flex: 1, border: 'none', width: '100%', height: 'calc(100vh - 54px)', display: 'block' }}
+            title={TAB_LABELS[tab]}
+          />
+        )}
+        <div style={{ padding: '28px 32px', flex: 1, display: APP_TAB_SRC[tab] ? 'none' : 'block' }}>
         {/* ── KITCHENS ── */}
         {tab === 'kitchens' && (
           <div style={cardStyle}>
@@ -402,9 +457,8 @@ export default function CompanyDashboardPage() {
             />
           </div>
         )}
+        </div>
       </div>
-
-      {/* Kitchen Form */}
       {showKitchenForm && (
         <Modal onClose={() => setShowKitchenForm(false)} title={editKitchen ? 'Edit Kitchen' : 'Add Kitchen'}>
           <form onSubmit={handleSaveKitchen}>

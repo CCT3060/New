@@ -14,6 +14,7 @@ import {
 
 const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'BEVERAGE', 'DESSERT'];
 const FOOD_TYPE_ICONS = { VEG: '🥦', NON_VEG: '🍗', EGG: '🥚', VEGAN: '🌱' };
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const today = () => new Date().toISOString().split('T')[0];
 
@@ -26,7 +27,22 @@ export default function MenuPlanForm({ existingPlan, warehouseId }) {
     planDate: existingPlan?.planDate ? existingPlan.planDate.split('T')[0] : today(),
     mealType: existingPlan?.mealType || 'LUNCH',
     description: existingPlan?.description || '',
+    unitId: existingPlan?.unitId || '',
   });
+
+  const [units, setUnits] = useState([]);
+
+  useEffect(() => {
+    // Fetch delivery units for this company (requires ck_token which includes companyId)
+    const token = localStorage.getItem('ck_token');
+    if (!token || token === 'undefined') return;
+    fetch(`${BASE}/menu-planner/delivery-units`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(d => { if (d.success) setUnits(d.data?.units || []); })
+      .catch(() => {});
+  }, []);
 
   const [selectedRecipes, setSelectedRecipes] = useState(
     existingPlan?.items?.map((item) => ({ ...item.recipe, itemId: item.id, servings: item.servings, notes: item.notes })) || []
@@ -147,6 +163,23 @@ export default function MenuPlanForm({ existingPlan, warehouseId }) {
                   placeholder="Optional notes about this menu plan..."
                 />
               </div>
+
+              {units.length > 0 && (
+                <div className="form-group">
+                  <label className="form-label">Delivery Unit</label>
+                  <select
+                    className="form-control"
+                    value={form.unitId}
+                    onChange={(e) => setForm((p) => ({ ...p, unitId: e.target.value }))}
+                  >
+                    <option value="">— All Units / Unassigned —</option>
+                    {units.map(u => <option key={u.id} value={u.id}>{u.name}{u.code ? ` (${u.code})` : ''}</option>)}
+                  </select>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-gray-500)', marginTop: 4 }}>
+                    Assign this menu plan to a specific delivery unit
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Actions */}

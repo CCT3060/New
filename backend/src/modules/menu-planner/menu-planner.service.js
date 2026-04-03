@@ -11,16 +11,18 @@ const getDefaultWarehouseId = async () => {
 
 const PLAN_COLS = `
   mp.id, mp.planName, mp.planDate, mp.mealType, mp.description,
-  mp.warehouseId, mp.createdBy, mp.isActive, mp.createdAt, mp.updatedAt,
+  mp.warehouseId, mp.unitId, mp.createdBy, mp.isActive, mp.createdAt, mp.updatedAt,
   w.id AS w_id, w.name AS w_name, w.code AS w_code,
-  u.id AS u_id, u.name AS u_name`;
+  u.id AS u_id, u.name AS u_name,
+  un.id AS un_id, un.name AS un_name, un.code AS un_code`;
 
 const mapPlan = (p) => ({
   id: p.id, planName: p.planName, planDate: p.planDate, mealType: p.mealType,
-  description: p.description, warehouseId: p.warehouseId, createdBy: p.createdBy,
-  isActive: !!p.isActive, createdAt: p.createdAt, updatedAt: p.updatedAt,
+  description: p.description, warehouseId: p.warehouseId, unitId: p.unitId,
+  createdBy: p.createdBy, isActive: !!p.isActive, createdAt: p.createdAt, updatedAt: p.updatedAt,
   warehouse: p.w_id ? { id: p.w_id, name: p.w_name, code: p.w_code } : null,
   creator: p.u_id ? { id: p.u_id, name: p.u_name } : null,
+  unit: p.un_id ? { id: p.un_id, name: p.un_name, code: p.un_code } : null,
 });
 
 const ITEM_RECIPE_COLS = `
@@ -103,6 +105,7 @@ const listMenuPlans = async ({ warehouseId, mealType, planDate, planDateFrom, pl
     FROM menu_plans mp
     LEFT JOIN warehouses w ON w.id = mp.warehouseId
     LEFT JOIN users u ON u.id = mp.createdBy
+    LEFT JOIN units un ON un.id = mp.unitId
     ${where} ORDER BY mp.planDate DESC LIMIT ? OFFSET ?`,
     [...params, take, skip]
   );
@@ -127,6 +130,7 @@ const getMenuPlanById = async (id) => {
     FROM menu_plans mp
     LEFT JOIN warehouses w ON w.id = mp.warehouseId
     LEFT JOIN users u ON u.id = mp.createdBy
+    LEFT JOIN units un ON un.id = mp.unitId
     WHERE mp.id = ? AND mp.isActive = 1`, [id]);
   if (!p) throw Object.assign(new Error('Menu plan not found'), { status: 404 });
   const items = await getPlanItems(id);
@@ -140,9 +144,9 @@ const createMenuPlan = async (data, userId) => {
   if (!data.warehouseId) data.warehouseId = await getDefaultWarehouseId();
 
   await db.query(`
-    INSERT INTO menu_plans (id, planName, planDate, mealType, description, warehouseId, createdBy, isActive, createdAt, updatedAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())`,
-    [id, data.planName, data.planDate, data.mealType, data.description || null, data.warehouseId, userId]
+    INSERT INTO menu_plans (id, planName, planDate, mealType, description, unitId, warehouseId, createdBy, isActive, createdAt, updatedAt)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())`,
+    [id, data.planName, data.planDate, data.mealType, data.description || null, data.unitId || null, data.warehouseId, userId]
   );
 
   if (data.items && data.items.length > 0) {
@@ -164,7 +168,7 @@ const updateMenuPlan = async (id, data, userId) => {
   const [[plan]] = await db.query('SELECT id FROM menu_plans WHERE id = ? AND isActive = 1', [id]);
   if (!plan) throw Object.assign(new Error('Menu plan not found'), { status: 404 });
 
-  const allowed = ['planName','planDate','mealType','description','warehouseId'];
+  const allowed = ['planName','planDate','mealType','description','warehouseId','unitId'];
   const sets = [];
   const params = [];
   for (const f of allowed) {

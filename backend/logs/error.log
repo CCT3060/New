@@ -2209,3 +2209,6 @@
 2026-04-03 14:25:01:251 [31merror[39m: [31mError: Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='[39m
 2026-04-03 16:09:25:925 [31merror[39m: [31mMySQL pool error:[39m
 2026-04-03 16:23:01:231 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-03 17:54:29:5429 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-03 18:20:12:2012 [31merror[39m: [31mMySQL pool error:[39m
+2026-04-03 18:35:29:3529 [31merror[39m: [31mMySQL pool error:[39m

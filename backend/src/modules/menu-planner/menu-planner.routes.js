@@ -1,8 +1,23 @@
 const router = require('express').Router();
 const c = require('./menu-planner.controller');
 const { authenticate } = require('../../middleware/auth.middleware');
+const db = require('../../db/mysql');
+const { success } = require('../../utils/response');
 
 router.use(authenticate);
+
+// Delivery units for the authenticated company user (used by menu plan form in iframe)
+router.get('/delivery-units', async (req, res, next) => {
+  try {
+    const companyId = req.user?.companyId;
+    if (!companyId) return success(res, { units: [] });
+    const [units] = await db.query(
+      'SELECT id, name, code FROM units WHERE companyId = ? AND isActive = 1 ORDER BY name ASC',
+      [companyId]
+    );
+    return success(res, { units });
+  } catch (err) { next(err); }
+});
 
 // Calendar actions (before /:id to avoid conflicts)
 router.post('/calendar/drop', c.dropRecipeOnSlot);

@@ -208,4 +208,90 @@ router.post('/kitchen-users',       companyAuth, ctrl.createKitchenUser);
 router.put('/kitchen-users/:id',    companyAuth, ctrl.updateKitchenUser);
 router.delete('/kitchen-users/:id', companyAuth, ctrl.deleteKitchenUser);
 
+// ─── Requisition ──────────────────────────────────────────────────────────────
+// GET /api/company/pax/requisition?from=YYYY-MM-DD&to=YYYY-MM-DD
+// Aggregates ingredients required for all pax entries in the given date range
+router.get('/pax/requisition', companyAuth, async (req, res, next) => {
+  try {
+    const { companyId } = req.companyUser;
+    const { from, to } = req.query;
+    if (!from || !to) return next(new AppError('from and to dates are required', 400));
+
+    const [entries] = await db.query(
+      `SELECT pe.date, pe.recipeId, pe.mealType, pe.paxCount, pe.uom,
+              r.recipeName, r.category, r.standardPax,
+              u.name AS unitName
+       FROM pax_entries pe
+       JOIN recipes r ON r.id = pe.recipeId
+       JOIN units u ON u.id = pe.unitId
+       WHERE pe.companyId = ? AND pe.date >= ? AND pe.date <= ? AND pe.paxCount > 0
+       ORDER BY pe.date ASC, pe.mealType ASC`,
+      [companyId, from, to]
+    );
+
+    if (entries.length === 0) {
+      return success(res, { items: [], recipeBreakdown: [], from, to });
+    }
+
+    const ingredientMap = {};
+    const recipeBreakdown = [];
+
+    for (const entry of entries) {
+      const d = entry.date instanceof Date
+        ? entry.date.toISOString().split('T')[0]
+        : String(entry.date).split('T')[0];
+      try {
+        const scaled = await recipeService.scaleRecipe(entry.recipeId, Number(entry.paxCount));
+        recipeBreakdown.push({
+          date: d,
+          mealType: entry.mealType,
+          recipeName: entry.recipeName,
+          unitName: entry.unitName,
+          paxCount: Number(entry.paxCount),
+          standardPax: Number(entry.standardPax),
+          scaleFactor: scaled.scaleFactor,
+          ingredientCount: scaled.scaledIngredients.length,
+          ingredients: scaled.scaledIngredients.map(ing => ({
+            inventoryItemId: ing.inventoryItemId,
+            itemCode: ing.itemCode || '',
+            itemName: ing.itemName || 'Unknown',
+            grossQty: parseFloat(ing.grossQty.toFixed(3)),
+            grossUnit: ing.grossUnit || '',
+            netQty: parseFloat(ing.netQty.toFixed(3)),
+            netUnit: ing.netUnit || ing.grossUnit || '',
+            wastagePercent: ing.wastagePercent,
+          })),
+        });
+        for (const ing of scaled.scaledIngredients) {
+          const key = ing.inventoryItemId;
+          if (!ingredientMap[key]) {
+            ingredientMap[key] = {
+              inventoryItemId: ing.inventoryItemId,
+              itemCode: ing.itemCode || '',
+              itemName: ing.itemName || 'Unknown',
+              unit: ing.grossUnit || '',
+              totalGrossQty: 0,
+              totalNetQty: 0,
+            };
+          }
+          ingredientMap[key].totalGrossQty += ing.grossQty;
+          ingredientMap[key].totalNetQty += ing.netQty;
+        }
+      } catch {
+        // skip recipes with no ingredients configured
+      }
+    }
+
+    const items = Object.values(ingredientMap)
+      .map(i => ({
+        ...i,
+        totalGrossQty: parseFloat(i.totalGrossQty.toFixed(3)),
+        totalNetQty: parseFloat(i.totalNetQty.toFixed(3)),
+      }))
+      .sort((a, b) => a.itemName.localeCompare(b.itemName));
+
+    return success(res, { items, recipeBreakdown, from, to });
+  } catch (err) { next(err); }
+});
+
 module.exports = router;

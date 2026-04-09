@@ -32,7 +32,7 @@ const buildPaginationMeta = (total, page, limit) => {
 };
 
 /**
- * Build sorting object for Prisma
+ * Build sorting object for SQL ORDER BY
  */
 const getSortParams = (query, allowedFields = []) => {
   const sortBy = query.sortBy || 'createdAt';

@@ -58,8 +58,18 @@ const listKitchens = async (companyId) => {
 
 const createKitchen = async (companyId, clientId, { name, address }) => {
   const id = uuidv4();
+  // Generate a unique warehouse code from the kitchen name
+  const baseCode = name.toUpperCase().replace(/[^A-Z0-9]/g, '_').slice(0, 20);
+  const code = `${baseCode}_${id.slice(0, 6).toUpperCase()}`;
+
+  // Create corresponding warehouse with same ID so recipe.warehouseId FK is satisfied
   await db.query(
-    'INSERT INTO kitchens (id, name, address, companyId, clientId, isActive) VALUES (?, ?, ?, ?, ?, 1)',
+    'INSERT IGNORE INTO warehouses (id, name, code, address, isActive, createdAt, updatedAt) VALUES (?, ?, ?, ?, 1, NOW(), NOW())',
+    [id, name, code, address || null]
+  );
+
+  await db.query(
+    'INSERT INTO kitchens (id, name, address, companyId, clientId, isActive, updatedAt) VALUES (?, ?, ?, ?, ?, 1, NOW())',
     [id, name, address || null, companyId, clientId]
   );
   const [[kitchen]] = await db.query(
@@ -114,7 +124,7 @@ const createStore = async (companyId, clientId, { name, code, kitchenId }) => {
 
   const id = uuidv4();
   await db.query(
-    'INSERT INTO stores (id, name, code, kitchenId, companyId, clientId, isActive) VALUES (?, ?, ?, ?, ?, ?, 1)',
+    'INSERT INTO stores (id, name, code, kitchenId, companyId, clientId, isActive, updatedAt) VALUES (?, ?, ?, ?, ?, ?, 1, NOW())',
     [id, name, code || name.toUpperCase().replace(/\s+/g, '_').slice(0, 20), kitchenId, companyId, clientId]
   );
   const [[store]] = await db.query(
@@ -163,7 +173,7 @@ const listUnits = async (companyId) => {
 const createUnit = async (companyId, clientId, { name, code, address }) => {
   const id = uuidv4();
   await db.query(
-    'INSERT INTO units (id, name, code, address, companyId, clientId, isActive) VALUES (?, ?, ?, ?, ?, ?, 1)',
+    'INSERT INTO units (id, name, code, address, companyId, clientId, isActive, updatedAt) VALUES (?, ?, ?, ?, ?, ?, 1, NOW())',
     [id, name, code || null, address || null, companyId, clientId]
   );
   const [[unit]] = await db.query(

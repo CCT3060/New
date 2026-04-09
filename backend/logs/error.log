@@ -2212,3 +2212,152 @@
 2026-04-03 17:54:29:5429 [31merror[39m: [31mAppError: Invalid email or password[39m
 2026-04-03 18:20:12:2012 [31merror[39m: [31mMySQL pool error:[39m
 2026-04-03 18:35:29:3529 [31merror[39m: [31mMySQL pool error:[39m
+2026-04-06 14:39:59:3959 [31merror[39m: [31mMySQL pool error:[39m
+2026-04-06 14:43:59:4359 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:44:00:440 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:44:04:444 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:44:05:445 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:44:08:448 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:44:09:449 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:44:29:4429 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:44:31:4431 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:45:02:452 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 14:54:02:542 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:54:03:543 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:54:05:545 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:54:06:546 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:54:08:548 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:54:09:549 [31merror[39m: [31mError: Table 'recipe_management.units' doesn't exist[39m
+2026-04-06 14:54:10:5410 [31merror[39m: [31mError: Unknown column 'mp.unitId' in 'field list'[39m
+2026-04-06 14:54:11:5411 [31merror[39m: [31mError: Unknown column 'mp.unitId' in 'field list'[39m
+2026-04-06 14:58:41:5841 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 14:58:45:5845 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 14:58:59:5859 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 14:59:10:5910 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 14:59:32:5932 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 14:59:37:5937 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:00:37:037 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:00:41:041 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:03:59:359 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:04:07:47 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:04:15:415 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:04:22:422 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:05:02:52 [31merror[39m: [31mAppError: This account is not linked to a company.[39m
+2026-04-06 15:05:33:533 [31merror[39m: [31mAppError: This account is not linked to a company.[39m
+2026-04-06 15:05:41:541 [31merror[39m: [31mAppError: This account is not linked to a company.[39m
+2026-04-06 15:06:39:639 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:06:42:642 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:06:45:645 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:07:18:718 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:07:20:720 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-06 15:09:46:946 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-06 15:10:07:107 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-06 15:10:25:1025 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 10:32:33:3233 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-07 10:33:13:3313 [31merror[39m: [31mAppError: This account is not linked to a company.[39m
+2026-04-07 10:33:13:3313 [31merror[39m: [31mAppError: Authentication required[39m
+2026-04-07 10:33:23:3323 [31merror[39m: [31mAppError: This account is not linked to a company.[39m
+2026-04-07 10:33:23:3323 [31merror[39m: [31mAppError: Authentication required[39m
+2026-04-07 10:33:32:3332 [31merror[39m: [31mAppError: This account is not linked to a company.[39m
+2026-04-07 10:33:47:3347 [31merror[39m: [31mMySQL pool error:[39m
+2026-04-07 10:34:13:3413 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-07 10:40:06:406 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:06:406 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:06:406 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:06:406 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:06:406 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:06:406 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:06:406 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:06:406 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:28:4028 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:28:4028 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:28:4028 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:28:4028 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:28:4028 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:28:4028 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:28:4028 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:40:28:4028 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:42:10:4210 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:42:10:4210 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:42:10:4210 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:42:10:4210 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:42:10:4210 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:42:10:4210 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:42:10:4210 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 10:42:10:4210 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 11:46:39:4639 [31merror[39m: [31mError: Column 'category' cannot be null[39m
+2026-04-07 11:51:33:5133 [31merror[39m: [31mError: Column 'category' cannot be null[39m
+2026-04-07 11:52:17:5217 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 11:52:17:5217 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 14:38:32:3832 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 14:41:14:4114 [31merror[39m: [31mError: Column 'category' cannot be null[39m
+2026-04-07 14:48:35:4835 [31merror[39m: [31mAppError: Invalid status transition from 'INACTIVE' to 'INACTIVE'. Allowed: ACTIVE, ARCHIVED[39m
+2026-04-07 14:57:05:575 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 14:59:52:5952 [31merror[39m: [31mAppError: from and to dates are required[39m
+2026-04-07 15:00:06:06 [31merror[39m: [31mAppError: from and to dates are required[39m
+2026-04-07 15:00:15:015 [31merror[39m: [31mAppError: from and to dates are required[39m
+2026-04-07 16:22:50:2250 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 16:22:50:2250 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 16:22:50:2250 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 16:22:50:2250 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 16:22:50:2250 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 16:22:50:2250 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 16:22:50:2250 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 16:30:33:3033 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 16:30:33:3033 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 16:30:33:3033 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 18:18:48:1848 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 18:18:48:1848 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 18:18:49:1849 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 18:18:49:1849 [31merror[39m: [31mError: Field 'updatedAt' doesn't have a default value[39m
+2026-04-07 18:35:21:3521 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-07 18:35:37:3537 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-07 18:39:05:395 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-07 18:39:18:3918 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-07 18:43:07:437 [31merror[39m: [31mError: Not allowed by CORS[39m
+2026-04-07 18:43:12:4312 [31merror[39m: [31mError: Not allowed by CORS[39m
+2026-04-07 18:44:05:445 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:05:445 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:07:447 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:07:447 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:08:448 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:08:448 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:12:4412 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:12:4412 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:12:4412 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:12:4412 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:12:4412 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:12:4412 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:12:4412 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:12:4412 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:12:4412 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 18:44:12:4412 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-07 19:02:26:226 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-07 19:04:01:41 [31merror[39m: [31mAppError: Invalid email or password[39m
+2026-04-08 11:27:54:2754 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:27:54:2754 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:27:54:2754 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:27:54:2754 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:28:08:288 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:28:08:288 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:28:08:288 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:28:08:288 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:28:08:288 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:28:08:288 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:28:08:288 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:28:08:288 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:28:08:288 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 11:28:08:288 [31merror[39m: [31mAppError: Invalid or expired token[39m
+2026-04-08 12:56:32:5632 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-08 14:34:02:342 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-08 14:35:11:3511 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-08 15:09:11:911 [31merror[39m: [31mError: Item not found[39m
+2026-04-08 16:14:17:1417 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-08 16:14:45:1445 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-08 16:15:34:1534 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-08 18:15:45:1545 [31merror[39m: [31mMySQL pool error:[39m
+2026-04-08 18:22:25:2225 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-08 18:24:32:2432 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-08 18:24:35:2435 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-08 18:32:52:3252 [31merror[39m: [31mError: Menu plan item not found[39m
+2026-04-09 00:29:25:2925 [31merror[39m: [31mAppError: Cannot delete an active recipe. Deactivate it first.[39m

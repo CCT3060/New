@@ -5,15 +5,14 @@
  * - Toolbar: prev/next week, today, clear week, duplicate to next week, CSV export, PDF report
  * - Smart Shuffle: auto-fill empty slots with matching recipes
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import {
   DndContext, DragOverlay, PointerSensor, useSensor, useSensors, closestCenter,
 } from '@dnd-kit/core';
-import { format, startOfWeek, addDays, addWeeks, subWeeks, isSameDay, parseISO,
-  startOfMonth, endOfMonth, addMonths, subMonths, eachDayOfInterval } from 'date-fns';
+import { format, startOfWeek, addDays, addWeeks, subWeeks, isSameDay, parseISO } from 'date-fns';
 import {
   useWeekMenuPlans, useDropOnSlot, useMoveItem,
-  useRecipeLookup, useClearRange, useDuplicateWeek, MENU_PLAN_KEYS,
+  useRecipeLookup, useDuplicateWeek,
 } from '../hooks/useMenuPlanner';
 import DraggableRecipeCard from '../components/DraggableRecipeCard';
 import CalendarCell from '../components/CalendarCell';
@@ -21,7 +20,6 @@ import MenuReportModal from '../components/MenuReportModal';
 import { useAuth } from '../../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import { menuPlanApi } from '../services/menu-planner.api';
-import { useQueryClient } from '@tanstack/react-query';
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'SNACK', 'DINNER', 'BEVERAGE', 'DESSERT'];
@@ -110,7 +108,7 @@ function DragGhostCard({ item }) {
 }
 
 // ── Confirm modal ──────────────────────────────────────────────────────────
-function ConfirmModal({ message, onConfirm, onCancel, loading }) {
+function ConfirmModal({ message, onConfirm, onCancel, loading, confirmLabel = 'Clear All', confirmColor = '#dc2626' }) {
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: '#fff', borderRadius: 14, padding: 28, maxWidth: 420, width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
@@ -119,8 +117,8 @@ function ConfirmModal({ message, onConfirm, onCancel, loading }) {
           <button onClick={onCancel} disabled={loading} style={{ padding: '8px 18px', borderRadius: 7, border: '1.5px solid #e2e8f0', background: '#fff', cursor: 'pointer', fontWeight: 600, color: '#374151' }}>
             Cancel
           </button>
-          <button onClick={onConfirm} disabled={loading} style={{ padding: '8px 18px', borderRadius: 7, border: 'none', background: '#dc2626', color: '#fff', cursor: 'pointer', fontWeight: 700 }}>
-            {loading ? 'Clearing...' : 'Clear All'}
+          <button onClick={onConfirm} disabled={loading} style={{ padding: '8px 18px', borderRadius: 7, border: 'none', background: confirmColor, color: '#fff', cursor: 'pointer', fontWeight: 700 }}>
+            {loading ? 'Working...' : confirmLabel}
           </button>
         </div>
       </div>
@@ -131,47 +129,46 @@ function ConfirmModal({ message, onConfirm, onCancel, loading }) {
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function MenuPlanCalendarPage() {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const canManage = ['ADMIN', 'OPS_MANAGER', 'KITCHEN_MANAGER'].includes(user?.role);
 
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [activeItem, setActiveItem] = useState(null);
   const [recipeSearch, setRecipeSearch] = useState('');
   const [showReport, setShowReport] = useState(false);
-  const [confirmClear, setConfirmClear] = useState(false);
-  const [viewMode, setViewMode] = useState('week'); // 'day' | 'week' | 'month'
+  const [viewMode, setViewMode] = useState('week'); // 'date' | 'week' | 'range'
   const [selectedDay, setSelectedDay] = useState(() => new Date());
+  // Range mode
+  const [rangeFrom, setRangeFrom] = useState(() => toISODate(new Date()));
+  const [rangeTo, setRangeTo] = useState(() => toISODate(addDays(new Date(), 6)));
+  const [addModal, setAddModal] = useState(null); // { date, mealType }
+  const [addSearch, setAddSearch] = useState('');
+  const [confirmDuplicate, setConfirmDuplicate] = useState(false);
+  const dateInputRef = useRef(null);
 
   const weekDays = useMemo(() => getWeekDays(weekStart), [weekStart]);
 
-  // For day view
+  // For date (single-day) view
   const dayDateStr = toISODate(selectedDay);
 
-  // For month view
-  const monthStart = useMemo(() => startOfMonth(weekStart), [weekStart]);
-  const monthEnd = useMemo(() => endOfMonth(weekStart), [weekStart]);
-  const monthDays = useMemo(() => eachDayOfInterval({ start: monthStart, end: monthEnd }), [monthStart, monthEnd]);
-
-  // planDateFrom/planDateTo adapts to the view
+  // planDateFrom/planDateTo adapts to the view mode
   const planDateFrom = useMemo(() => {
-    if (viewMode === 'day') return dayDateStr;
-    if (viewMode === 'month') return toISODate(monthStart);
+    if (viewMode === 'date') return dayDateStr;
+    if (viewMode === 'range') return rangeFrom;
     return toISODate(weekDays[0]);
-  }, [viewMode, dayDateStr, monthStart, weekDays]);
+  }, [viewMode, dayDateStr, rangeFrom, weekDays]);
   const planDateTo = useMemo(() => {
-    if (viewMode === 'day') return dayDateStr;
-    if (viewMode === 'month') return toISODate(monthEnd);
+    if (viewMode === 'date') return dayDateStr;
+    if (viewMode === 'range') return rangeTo;
     return toISODate(weekDays[6]);
-  }, [viewMode, dayDateStr, monthEnd, weekDays]);
+  }, [viewMode, dayDateStr, rangeTo, weekDays]);
 
-  const { data: weekData, isLoading: weekLoading } = useWeekMenuPlans(planDateFrom, planDateTo);
-  const { data: recipeData, isLoading: recipesLoading } = useRecipeLookup({
+  const { data: weekData, isLoading: weekLoading, refetch: weekDataRefetch } = useWeekMenuPlans(planDateFrom, planDateTo);
+  const { data: recipeData, isLoading: recipesLoading, refetch: recipeRefetch } = useRecipeLookup({
     search: recipeSearch,
     limit: 200,
   });
   const { mutateAsync: dropOnSlot } = useDropOnSlot();
   const { mutateAsync: moveItem } = useMoveItem();
-  const { mutateAsync: clearRange, isPending: clearing } = useClearRange();
   const { mutateAsync: dupWeek, isPending: duplicating } = useDuplicateWeek();
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
@@ -214,51 +211,92 @@ export default function MenuPlanCalendarPage() {
   };
 
   const handleRemoveItem = async (planId, itemId) => {
+    if (!itemId) { toast.error('Cannot remove: missing item ID'); return; }
     try {
-      await menuPlanApi.removeItem(planId, itemId);
-      queryClient.invalidateQueries({ queryKey: MENU_PLAN_KEYS.all });
+      // Use planId if available, otherwise use a placeholder — backend looks up by itemId alone
+      await menuPlanApi.removeItem(planId || '_', itemId);
+      weekDataRefetch();
     } catch (err) { toast.error(err.message); }
   };
 
-  // ── Toolbar actions ────────────────────────────────────────────────────
-  const handleClearWeek = async () => {
-    setConfirmClear(false);
-    await clearRange({ dateFrom: planDateFrom, dateTo: planDateTo });
+  const handleClickAdd = (date, mealType) => {
+    setAddSearch('');
+    setAddModal({ date, mealType });
   };
 
+  const handlePickRecipe = async (recipe) => {
+    if (!addModal) return;
+    try {
+      await dropOnSlot({ planDate: addModal.date, mealType: addModal.mealType, recipeId: recipe.id, servings: 1 });
+      toast.success(`Added ${recipe.recipeName}`);
+    } catch { /* onError shows toast */ }
+    // don't close modal — allow adding more recipes
+  };
+
+  const addModalRecipes = useMemo(() => {
+    if (!addModal) return [];
+    const r = recipeData?.recipes || [];
+    const term = addSearch.trim().toLowerCase();
+    if (!term) return r;
+    return r.filter(rec =>
+      rec.recipeName?.toLowerCase().includes(term) || rec.recipeCode?.toLowerCase().includes(term)
+    );
+  }, [addModal, recipeData, addSearch]);
+
+  // ── Toolbar actions ────────────────────────────────────────────────────
   const handleDuplicateWeek = async () => {
-    const nextWeekFrom = toISODate(addWeeks(weekDays[0], 1));
-    await dupWeek({ sourceFrom: planDateFrom, sourceTo: planDateTo, targetFrom: nextWeekFrom });
+    setConfirmDuplicate(false);
+    const srcDays = viewMode === 'week'
+      ? 7
+      : Math.round((new Date(planDateTo) - new Date(planDateFrom)) / 86400000) + 1;
+    const nextFrom = toISODate(addDays(new Date(planDateFrom + 'T12:00:00'), srcDays));
+    await dupWeek({ sourceFrom: planDateFrom, sourceTo: planDateTo, targetFrom: nextFrom });
   };
 
   // ── View navigation helpers ────────────────────────────────────────────
   const handlePrev = () => {
-    if (viewMode === 'day') setSelectedDay(d => addDays(d, -1));
-    else if (viewMode === 'month') setWeekStart(w => startOfWeek(subMonths(w, 1), { weekStartsOn: 1 }));
+    if (viewMode === 'date') setSelectedDay(d => addDays(d, -1));
     else setWeekStart(w => subWeeks(w, 1));
   };
   const handleNext = () => {
-    if (viewMode === 'day') setSelectedDay(d => addDays(d, 1));
-    else if (viewMode === 'month') setWeekStart(w => startOfWeek(addMonths(w, 1), { weekStartsOn: 1 }));
+    if (viewMode === 'date') setSelectedDay(d => addDays(d, 1));
     else setWeekStart(w => addWeeks(w, 1));
   };
   const handleToday = () => {
     const today = new Date();
     setSelectedDay(today);
     setWeekStart(startOfWeek(today, { weekStartsOn: 1 }));
+    if (viewMode === 'date') {
+      // already set selectedDay above
+    } else if (viewMode === 'range') {
+      setRangeFrom(toISODate(today));
+      setRangeTo(toISODate(addDays(today, 6)));
+    }
   };
 
   const viewTitle = useMemo(() => {
-    if (viewMode === 'day') return format(selectedDay, 'EEEE, d MMM yyyy');
-    if (viewMode === 'month') return format(monthStart, 'MMMM yyyy');
+    if (viewMode === 'date') return format(selectedDay, 'EEEE, d MMM yyyy');
+    if (viewMode === 'range') return `${rangeFrom} → ${rangeTo}`;
     return `${format(weekDays[0], 'd MMM')} – ${format(weekDays[6], 'd MMM yyyy')}`;
-  }, [viewMode, selectedDay, monthStart, weekDays]);
+  }, [viewMode, selectedDay, rangeFrom, rangeTo, weekDays]);
 
   const handleSmartShuffle = async () => {
     const recipes = recipeData?.recipes || [];
     if (!recipes.length) { toast.warning('No recipes available for shuffle'); return; }
     let added = 0;
-    for (const day of weekDays) {
+    // Get the list of days from current view
+    let days = [];
+    if (viewMode === 'date') {
+      days = [selectedDay];
+    } else if (viewMode === 'range') {
+      // enumerate range
+      let cur = new Date(rangeFrom + 'T12:00:00');
+      const end = new Date(rangeTo + 'T12:00:00');
+      while (cur <= end) { days.push(new Date(cur)); cur = addDays(cur, 1); }
+    } else {
+      days = weekDays;
+    }
+    for (const day of days) {
       const dateStr = toISODate(day);
       for (const mealType of MEAL_TYPES) {
         const { items } = getSlot(dateStr, mealType);
@@ -323,7 +361,7 @@ export default function MenuPlanCalendarPage() {
                 Kitchen Bank
               </span>
               <button
-                onClick={() => queryClient.invalidateQueries({ queryKey: ['recipes', 'lookup'] })}
+                onClick={() => recipeRefetch?.()}
                 style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: '1rem', lineHeight: 1, padding: 2 }}
                 title="Refresh recipe list"
               >&#8635;</button>
@@ -366,61 +404,80 @@ export default function MenuPlanCalendarPage() {
 
           {/* Toolbar */}
           <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr auto 1fr',
+            display: 'flex',
             alignItems: 'center',
             gap: 8, padding: '9px 14px',
             background: '#fff', borderBottom: '1px solid #e2e8f0',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.05)', minHeight: 52,
+            boxShadow: '0 1px 4px rgba(0,0,0,0.05)', minHeight: 52, flexWrap: 'wrap',
           }}>
-            {/* LEFT: period dropdown */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <select
-                value={viewMode === 'day' ? 'today' : viewMode === 'week' ? 'week' : 'month'}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  const today = new Date();
-                  if (v === 'today') {
-                    setSelectedDay(today);
-                    setViewMode('day');
-                  } else if (v === 'week') {
-                    setWeekStart(startOfWeek(today, { weekStartsOn: 1 }));
-                    setViewMode('week');
-                  } else {
-                    setWeekStart(startOfWeek(today, { weekStartsOn: 1 }));
-                    setViewMode('month');
-                  }
-                }}
-                style={{
-                  padding: '6px 32px 6px 12px', border: '1.5px solid #e2e8f0', borderRadius: 8,
-                  fontSize: '0.82rem', fontWeight: 600, background: '#fff', color: '#0f172a',
-                  cursor: 'pointer', outline: 'none', appearance: 'none',
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 10px center',
-                }}
-              >
-                <option value="today">Today</option>
-                <option value="week">This Week</option>
-                <option value="month">This Month</option>
-              </select>
+            {/* LEFT: view mode switcher + date pickers */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, flexWrap: 'wrap' }}>
+              {/* Mode tabs */}
+              {[['date','📅 Date'],['week','📆 Week'],['range','📋 Range']].map(([mode, label]) => (
+                <button key={mode} onClick={() => setViewMode(mode)}
+                  style={{
+                    padding: '5px 12px', borderRadius: 7, border: '1.5px solid',
+                    borderColor: viewMode === mode ? '#6366f1' : '#e2e8f0',
+                    background: viewMode === mode ? '#eef2ff' : '#fff',
+                    color: viewMode === mode ? '#4f46e5' : '#64748b',
+                    fontWeight: viewMode === mode ? 700 : 500,
+                    cursor: 'pointer', fontSize: '0.76rem',
+                  }}>
+                  {label}
+                </button>
+              ))}
+
+              {/* Date picker — single date */}
+              {viewMode === 'date' && (
+                <input type="date" value={dayDateStr}
+                  onChange={e => {
+                    if (!e.target.value) return;
+                    setSelectedDay(new Date(e.target.value + 'T12:00:00'));
+                  }}
+                  style={{ padding: '5px 10px', border: '1.5px solid #e2e8f0', borderRadius: 8, fontSize: '0.82rem' }}
+                />
+              )}
+
+              {/* Week picker — navigate with prev/next */}
+              {viewMode === 'week' && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <button onClick={handlePrev} style={navBtnStyle}>‹</button>
+                  <button onClick={handleToday} style={{ ...navBtnStyle, color: '#6366f1', borderColor: '#c7d2fe', fontWeight: 700 }}>Today</button>
+                  <button onClick={handleNext} style={navBtnStyle}>›</button>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a', marginLeft: 4 }}>{viewTitle}</span>
+                </div>
+              )}
+
+              {/* Range picker — from/to date inputs */}
+              {viewMode === 'range' && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <input type="date" value={rangeFrom}
+                    onChange={e => e.target.value && setRangeFrom(e.target.value)}
+                    style={{ padding: '5px 10px', border: '1.5px solid #e2e8f0', borderRadius: 8, fontSize: '0.82rem' }}
+                  />
+                  <span style={{ color: '#94a3b8', fontWeight: 600, fontSize: '0.8rem' }}>→</span>
+                  <input type="date" value={rangeTo} min={rangeFrom}
+                    onChange={e => e.target.value && setRangeTo(e.target.value)}
+                    style={{ padding: '5px 10px', border: '1.5px solid #e2e8f0', borderRadius: 8, fontSize: '0.82rem' }}
+                  />
+                </div>
+              )}
             </div>
 
-            {/* CENTER: date title */}
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#0f172a' }}>{viewTitle}</span>
-            </div>
+            {/* CENTER: title shown only for date/range */}
+            {viewMode === 'date' && (
+              <div style={{ textAlign: 'center', flex: '0 1 auto', fontWeight: 700, fontSize: '0.9rem', color: '#0f172a' }}>
+                {format(selectedDay, 'EEEE, d MMM yyyy')}
+              </div>
+            )}
 
             {/* RIGHT: action buttons */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
             {canManage && (
-              <ABtn title="Duplicate this week to next week" disabled={duplicating} onClick={handleDuplicateWeek} icon="&#9112;" label="Duplicate" color="#0284c7" />
+              <ABtn title="Duplicate this period to the next" disabled={duplicating} onClick={() => setConfirmDuplicate(true)} icon="⧉" label="Duplicate" color="#0284c7" />
             )}
-            {canManage && (
-              <ABtn title="Clear all plans this week" onClick={() => setConfirmClear(true)} icon="&#128465;" label="Clear" color="#dc2626" />
-            )}
-            <ABtn title="Export weekly plan as CSV" onClick={handleExportCSV} icon="&#128196;" label="CSV" color="#16a34a" />
-            <ABtn title="View detailed report and print/export PDF" onClick={() => setShowReport(true)} icon="&#128209;" label="Report" color="#7c3aed" />
+            <ABtn title="Export plan as CSV" onClick={handleExportCSV} icon="📄" label="CSV" color="#16a34a" />
+            <ABtn title="View detailed report" onClick={() => setShowReport(true)} icon="📑" label="Report" color="#7c3aed" />
             {canManage && (
               <button
                 onClick={handleSmartShuffle}
@@ -431,7 +488,7 @@ export default function MenuPlanCalendarPage() {
                   boxShadow: '0 2px 8px rgba(99,102,241,0.3)',
                 }}
               >
-                &#9889; Smart Shuffle
+                ⚡ Smart Shuffle
               </button>
             )}
             </div>
@@ -494,6 +551,7 @@ export default function MenuPlanCalendarPage() {
                               key={`${dateStr}-${mealType}`}
                               date={dateStr} mealType={mealType} planId={planId} items={items}
                               canManage={canManage} onRemoveItem={handleRemoveItem}
+                              onClickAdd={handleClickAdd}
                               isToday={isSameDay(day, new Date())} weekLoading={weekLoading}
                               mealColor={mc}
                             />
@@ -506,8 +564,8 @@ export default function MenuPlanCalendarPage() {
               </table>
             )}
 
-            {/* ─── DAY VIEW ─── */}
-            {viewMode === 'day' && (
+            {/* ─── DATE VIEW (single day) ─── */}
+            {viewMode === 'date' && (
               <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
                 <colgroup>
                   <col style={{ width: 110 }} />
@@ -546,6 +604,7 @@ export default function MenuPlanCalendarPage() {
                         <CalendarCell
                           date={dayDateStr} mealType={mealType} planId={planId} items={items}
                           canManage={canManage} onRemoveItem={handleRemoveItem}
+                          onClickAdd={handleClickAdd}
                           isToday={isSameDay(selectedDay, new Date())} weekLoading={weekLoading}
                           mealColor={mc}
                         />
@@ -556,79 +615,83 @@ export default function MenuPlanCalendarPage() {
               </table>
             )}
 
-            {/* ─── MONTH VIEW ─── */}
-            {viewMode === 'month' && (() => {
-              // Build a 7-column grid: pad start with empty days
-              const startDow = monthDays[0].getDay(); // 0=Sun
-              const padStart = (startDow + 6) % 7; // Mon-first offset
-              const totalCells = padStart + monthDays.length;
-              const weeks = Math.ceil(totalCells / 7);
-              const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            {/* ─── RANGE VIEW (multi-day table) ─── */}
+            {viewMode === 'range' && (() => {
+              // Enumerate days in range
+              let rangeDays = [];
+              try {
+                let cur = new Date(rangeFrom + 'T12:00:00');
+                const end = new Date(rangeTo + 'T12:00:00');
+                while (cur <= end && rangeDays.length < 31) {
+                  rangeDays.push(new Date(cur));
+                  cur = addDays(cur, 1);
+                }
+              } catch { rangeDays = []; }
+              if (!rangeDays.length) return <div style={{ padding: 32, textAlign:'center', color:'#94a3b8' }}>Select a valid date range above.</div>;
               return (
-                <div style={{ padding: 16 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4, marginBottom: 4 }}>
-                    {daysOfWeek.map(d => (
-                      <div key={d} style={{ textAlign: 'center', fontSize: '0.65rem', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', padding: '4px 0', textTransform: 'uppercase' }}>{d}</div>
-                    ))}
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
-                    {Array.from({ length: weeks * 7 }).map((_, cellIdx) => {
-                      const dayIdx = cellIdx - padStart;
-                      if (dayIdx < 0 || dayIdx >= monthDays.length) {
-                        return <div key={cellIdx} style={{ minHeight: 80, borderRadius: 8, background: '#f8fafc' }} />;
-                      }
-                      const day = monthDays[dayIdx];
-                      const dateStr = toISODate(day);
-                      const isToday = isSameDay(day, new Date());
-                      const isSelected = isSameDay(day, selectedDay);
-                      const dayPlans = MEAL_TYPES.map(mt => {
-                        const { items } = getSlot(dateStr, mt);
-                        return items.length > 0 ? { mealType: mt, count: items.length } : null;
-                      }).filter(Boolean);
-                      return (
-                        <div
-                          key={cellIdx}
-                          onClick={() => { setSelectedDay(day); setViewMode('day'); }}
-                          style={{
-                            minHeight: 80, borderRadius: 8, padding: 6, cursor: 'pointer',
-                            background: isSelected ? '#eff6ff' : '#fff',
-                            border: `1.5px solid ${isToday ? '#3b82f6' : isSelected ? '#bfdbfe' : '#e2e8f0'}`,
-                            transition: 'all 0.12s',
-                          }}
-                          onMouseEnter={(e) => { if (!isToday && !isSelected) e.currentTarget.style.background = '#f8fafc'; }}
-                          onMouseLeave={(e) => { if (!isToday && !isSelected) e.currentTarget.style.background = '#fff'; }}
-                        >
-                          <div style={{
-                            fontSize: '0.78rem', fontWeight: 700, marginBottom: 4,
-                            background: isToday ? '#2563eb' : 'transparent',
-                            color: isToday ? '#fff' : '#0f172a',
-                            width: 22, height: 22, borderRadius: '50%',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 820, tableLayout: 'fixed' }}>
+                  <colgroup>
+                    <col style={{ width: 90 }} />
+                    {rangeDays.map(d => <col key={d.toISOString()} />)}
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th style={mealHeaderTh}>MEAL</th>
+                      {rangeDays.map((day) => {
+                        const isToday = isSameDay(day, new Date());
+                        return (
+                          <th key={day.toISOString()} style={{
+                            ...dayHeaderTh,
+                            background: isToday ? '#eff6ff' : '#f8fafc',
+                            borderBottom: `2px solid ${isToday ? '#3b82f6' : '#e2e8f0'}`,
                           }}>
-                            {format(day, 'd')}
-                          </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            {dayPlans.slice(0, 3).map(({ mealType, count }) => {
-                              const mc = MEAL_COLORS[mealType];
-                              return (
-                                <div key={mealType} style={{
-                                  fontSize: '0.58rem', fontWeight: 600, padding: '1px 5px',
-                                  borderRadius: 4, background: mc.bg, color: mc.color,
-                                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                                }}>
-                                  {MEAL_LABEL[mealType]} &middot; {count}
-                                </div>
-                              );
-                            })}
-                            {dayPlans.length > 3 && (
-                              <div style={{ fontSize: '0.58rem', color: '#94a3b8', paddingLeft: 5 }}>+{dayPlans.length - 3} more</div>
-                            )}
-                          </div>
-                        </div>
+                            <button
+                              onClick={() => { setSelectedDay(day); setViewMode('date'); }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'center', width: '100%' }}
+                            >
+                              <div style={{ fontSize: '0.68rem', fontWeight: 600, color: isToday ? '#2563eb' : '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                {format(day, 'EEE')}
+                              </div>
+                              <div style={{ fontSize: '1.1rem', fontWeight: 800, color: isToday ? '#2563eb' : '#0f172a', lineHeight: 1.1 }}>
+                                {format(day, 'd')}
+                              </div>
+                              <div style={{ fontSize: '0.63rem', color: '#94a3b8' }}>{format(day, 'MMM')}</div>
+                            </button>
+                          </th>
+                        );
+                      })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {MEAL_TYPES.map((mealType) => {
+                      const mc = MEAL_COLORS[mealType];
+                      return (
+                        <tr key={mealType}>
+                          <td style={{ ...mealLabelTd, borderLeft: `3px solid ${mc.color}` }}>
+                            <div style={{ width: 8, height: 8, borderRadius: '50%', background: mc.color, margin: '0 auto 3px' }} />
+                            <div style={{ fontSize: '0.57rem', fontWeight: 800, color: mc.color, letterSpacing: '0.05em' }}>
+                              {MEAL_LABEL[mealType]}
+                            </div>
+                          </td>
+                          {rangeDays.map((day) => {
+                            const dateStr = toISODate(day);
+                            const { items, planId } = getSlot(dateStr, mealType);
+                            return (
+                              <CalendarCell
+                                key={`${dateStr}-${mealType}`}
+                                date={dateStr} mealType={mealType} planId={planId} items={items}
+                                canManage={canManage} onRemoveItem={handleRemoveItem}
+                                onClickAdd={handleClickAdd}
+                                isToday={isSameDay(day, new Date())} weekLoading={weekLoading}
+                                mealColor={mc}
+                              />
+                            );
+                          })}
+                        </tr>
                       );
                     })}
-                  </div>
-                </div>
+                  </tbody>
+                </table>
               );
             })()}
 
@@ -641,19 +704,95 @@ export default function MenuPlanCalendarPage() {
         {activeItem && <DragGhostCard item={activeItem} />}
       </DragOverlay>
 
-      {/* Confirm clear modal */}
-      {confirmClear && (
+      {/* Confirm duplicate modal */}
+      {confirmDuplicate && (
         <ConfirmModal
-          message={`Clear all plans for ${format(weekDays[0], 'd MMM')} - ${format(weekDays[6], 'd MMM yyyy')}? This cannot be undone.`}
-          onConfirm={handleClearWeek}
-          onCancel={() => setConfirmClear(false)}
-          loading={clearing}
+          message={`Duplicate all plans from ${planDateFrom} → ${planDateTo} to the next period? Existing plans in the target period will be skipped.`}
+          onConfirm={handleDuplicateWeek}
+          onCancel={() => setConfirmDuplicate(false)}
+          loading={duplicating}
+          confirmLabel="Duplicate"
+          confirmColor="#0284c7"
         />
       )}
 
       {/* Report / PDF modal */}
       {showReport && (
         <MenuReportModal dateFrom={planDateFrom} dateTo={planDateTo} onClose={() => setShowReport(false)} />
+      )}
+
+      {/* Add recipe to slot modal */}
+      {addModal && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={() => setAddModal(null)}
+        >
+          <div
+            style={{ background: '#fff', borderRadius: 16, padding: '24px 28px', width: 460, maxHeight: '75vh', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.25)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ marginBottom: 14 }}>
+              <h3 style={{ margin: '0 0 4px', fontWeight: 800, fontSize: '1rem', color: '#0f172a' }}>
+                Add Recipe — {MEAL_LABEL[addModal.mealType] || addModal.mealType}
+              </h3>
+              <p style={{ margin: 0, color: '#64748b', fontSize: '0.78rem' }}>
+                {format(parseISO(addModal.date), 'EEEE, d MMM yyyy')}
+              </p>
+            </div>
+            <input
+              autoFocus
+              placeholder="Search recipes..."
+              value={addSearch}
+              onChange={e => setAddSearch(e.target.value)}
+              style={{ padding: '8px 12px', border: '1.5px solid #e2e8f0', borderRadius: 8, marginBottom: 12, fontSize: '0.84rem' }}
+            />
+            <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
+              {addModalRecipes.map(r => {
+                const food = FOOD_BADGE[r.foodType];
+                // Check if recipe is already in this slot
+                const slotItems = getSlot(addModal.date, addModal.mealType).items;
+                const alreadyAdded = slotItems.some(i => i.recipeId === r.id);
+                return (
+                  <div
+                    key={r.id}
+                    onClick={() => !alreadyAdded && handlePickRecipe(r)}
+                    style={{
+                      padding: '9px 12px', borderRadius: 8, border: '1.5px solid #f1f5f9',
+                      cursor: alreadyAdded ? 'default' : 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      opacity: alreadyAdded ? 0.5 : 1,
+                      transition: 'all 0.12s',
+                    }}
+                    onMouseEnter={e => { if (!alreadyAdded) { e.currentTarget.style.borderColor = '#6366f1'; e.currentTarget.style.background = '#eef2ff'; } }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#f1f5f9'; e.currentTarget.style.background = ''; }}
+                  >
+                    {food && (
+                      <span style={{ background: food.bg, color: food.color, borderRadius: 4, padding: '1px 5px', fontSize: '0.62rem', fontWeight: 800 }}>
+                        {food.label}
+                      </span>
+                    )}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.82rem', color: '#0f172a' }}>{r.recipeName}</div>
+                      <div style={{ fontSize: '0.68rem', color: '#64748b' }}>{r.recipeCode} · {r.category}</div>
+                    </div>
+                    {alreadyAdded
+                      ? <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 600 }}>Added</span>
+                      : <span style={{ fontSize: '0.68rem', color: '#6366f1', fontWeight: 700 }}>+Add</span>
+                    }
+                  </div>
+                );
+              })}
+              {addModalRecipes.length === 0 && (
+                <p style={{ textAlign: 'center', color: '#94a3b8', padding: '20px 0' }}>No recipes found</p>
+              )}
+            </div>
+            <div style={{ marginTop: 14, textAlign: 'right' }}>
+              <button onClick={() => setAddModal(null)} style={{ padding: '7px 18px', background: '#f1f5f9', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, color: '#64748b' }}>
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </DndContext>
   );

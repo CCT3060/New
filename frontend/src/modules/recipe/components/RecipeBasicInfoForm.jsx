@@ -2,6 +2,7 @@
  * RecipeBasicInfoForm
  * Section 1 of the recipe create/edit form — header fields
  */
+import { useState } from 'react';
 import { useWarehouses } from '../hooks/useRecipes';
 
 const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'BEVERAGE', 'DESSERT'];
@@ -11,11 +12,29 @@ const FOOD_TYPES = [
   { value: 'EGG', label: 'Egg' },
   { value: 'VEGAN', label: 'Vegan' },
 ];
-const CATEGORIES = ['Rice Dishes', 'Breads', 'Curries', 'Dal', 'Salads', 'Soups', 'Snacks', 'Light Meals', 'Desserts', 'Beverages', 'Other'];
+const CATEGORIES = [
+  'Breakfast', 'Starters', 'Main Course', 'Side Dish', 'Rice & Biryani',
+  'Breads', 'Soups', 'Salads', 'Desserts', 'Beverages', 'Snacks',
+  'Condiments', 'Dairy', 'General', 'Rice Dishes', 'Curries', 'Dal',
+  'Light Meals', 'Other',
+];
+const YIELD_UNITS = ['kg', 'g', 'litre', 'ml', 'pcs', 'portion', 'serving', 'cup', 'tbsp', 'tsp', 'nos', 'batch', 'tray'];
 
 export default function RecipeBasicInfoForm({ register, errors, watch, setValue, disabled = false, isEditMode = false, onStatusChange, statusLoading }) {
-  const { data: warehouses = [], isLoading: warehousesLoading } = useWarehouses();
+  const { data: warehousesData = [], isLoading: warehousesLoading } = useWarehouses();
+  const warehouses = warehousesData?.warehouses ?? (Array.isArray(warehousesData) ? warehousesData : []);
   const currentStatus = watch('status');
+  const currentYieldUnit = watch('yieldUnit');
+  const currentCategory = watch('category');
+  const currentMealType = watch('mealType');
+  const currentFoodType = watch('foodType');
+
+  const KNOWN_FOOD_TYPES = [...FOOD_TYPES.map(f => f.value), 'JAIN', 'KETO', 'SATVIK', ''];
+  // Detect if stored value is not in the standard enum list
+  const isCustomCategory = currentCategory && !CATEGORIES.includes(currentCategory);
+  const isCustomMealType = currentMealType && !MEAL_TYPES.includes(currentMealType?.toUpperCase?.());
+  const isCustomFoodType = currentFoodType && !KNOWN_FOOD_TYPES.includes(currentFoodType);
+  const isCustomYieldUnit = currentYieldUnit && !YIELD_UNITS.includes(currentYieldUnit);
 
   return (
     <div>
@@ -116,28 +135,106 @@ export default function RecipeBasicInfoForm({ register, errors, watch, setValue,
 
         <div className="form-group">
           <label className="form-label required" htmlFor="category">Category</label>
-          <select id="category" className={`form-control ${errors.category ? 'error' : ''}`} disabled={disabled} {...register('category')}>
-            <option value="">Select category...</option>
-            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
+          {isCustomCategory ? (
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <input
+                id="category"
+                type="text"
+                className={`form-control ${errors.category ? 'error' : ''}`}
+                disabled={disabled}
+                {...register('category')}
+                style={{ flex: 1 }}
+              />
+              <button type="button" onClick={() => setValue('category', '')} style={{ padding: '6px 10px', border: '1px solid #e2e8f0', borderRadius: 6, background: '#f8fafc', cursor: 'pointer', fontSize: '0.75rem' }}>↩</button>
+            </div>
+          ) : (
+            <select id="category" className={`form-control ${errors.category ? 'error' : ''}`} disabled={disabled}
+              value={currentCategory || ''}
+              onChange={(e) => {
+                if (e.target.value === '__custom__') {
+                  setValue('category', 'Custom', { shouldDirty: true });
+                } else {
+                  setValue('category', e.target.value, { shouldDirty: true });
+                }
+              }}
+              {...(() => { const { ref } = register('category'); return { ref }; })()}
+            >
+              <option value="">Select category...</option>
+              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              <option value="__custom__">+ Add Custom...</option>
+            </select>
+          )}
           {errors.category && <p className="form-error">{errors.category.message}</p>}
         </div>
 
         <div className="form-group">
           <label className="form-label required" htmlFor="mealType">Meal Type</label>
-          <select id="mealType" className={`form-control ${errors.mealType ? 'error' : ''}`} disabled={disabled} {...register('mealType')}>
-            <option value="">Select meal type...</option>
-            {MEAL_TYPES.map((t) => <option key={t} value={t}>{t.charAt(0) + t.slice(1).toLowerCase()}</option>)}
-          </select>
+          {isCustomMealType ? (
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <input
+                id="mealType"
+                type="text"
+                className={`form-control ${errors.mealType ? 'error' : ''}`}
+                disabled={disabled}
+                {...register('mealType')}
+                style={{ flex: 1 }}
+              />
+              <button type="button" onClick={() => setValue('mealType', 'LUNCH')} style={{ padding: '6px 10px', border: '1px solid #e2e8f0', borderRadius: 6, background: '#f8fafc', cursor: 'pointer', fontSize: '0.75rem' }}>↩</button>
+            </div>
+          ) : (
+            <select id="mealType" className={`form-control ${errors.mealType ? 'error' : ''}`} disabled={disabled}
+              value={currentMealType || ''}
+              onChange={(e) => {
+                if (e.target.value === '__custom_meal__') {
+                  setValue('mealType', 'Custom', { shouldDirty: true });
+                } else {
+                  setValue('mealType', e.target.value, { shouldDirty: true });
+                }
+              }}
+              {...(() => { const { ref } = register('mealType'); return { ref }; })()}
+            >
+              <option value="">Select meal type...</option>
+              {MEAL_TYPES.map((t) => <option key={t} value={t}>{t.charAt(0) + t.slice(1).toLowerCase()}</option>)}
+              <option value="__custom_meal__">+ Add Custom...</option>
+            </select>
+          )}
           {errors.mealType && <p className="form-error">{errors.mealType.message}</p>}
         </div>
 
         <div className="form-group">
           <label className="form-label required" htmlFor="foodType">Food Type</label>
-          <select id="foodType" className={`form-control ${errors.foodType ? 'error' : ''}`} disabled={disabled} {...register('foodType')}>
-            <option value="">Select food type...</option>
-            {FOOD_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-          </select>
+          {isCustomFoodType ? (
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <input
+                id="foodType"
+                type="text"
+                className={`form-control ${errors.foodType ? 'error' : ''}`}
+                disabled={disabled}
+                {...register('foodType')}
+                style={{ flex: 1 }}
+              />
+              <button type="button" onClick={() => setValue('foodType', 'VEG')} style={{ padding: '6px 10px', border: '1px solid #e2e8f0', borderRadius: 6, background: '#f8fafc', cursor: 'pointer', fontSize: '0.75rem' }}>↩</button>
+            </div>
+          ) : (
+            <select id="foodType" className={`form-control ${errors.foodType ? 'error' : ''}`} disabled={disabled}
+              value={currentFoodType || ''}
+              onChange={(e) => {
+                if (e.target.value === '__custom_food__') {
+                  setValue('foodType', 'Custom', { shouldDirty: true });
+                } else {
+                  setValue('foodType', e.target.value, { shouldDirty: true });
+                }
+              }}
+              {...(() => { const { ref } = register('foodType'); return { ref }; })()}
+            >
+              <option value="">Select food type...</option>
+              {FOOD_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+              <option value="JAIN">Jain</option>
+              <option value="KETO">Keto</option>
+              <option value="SATVIK">Satvik</option>
+              <option value="__custom_food__">+ Add Custom...</option>
+            </select>
+          )}
           {errors.foodType && <p className="form-error">{errors.foodType.message}</p>}
         </div>
 
@@ -154,10 +251,10 @@ export default function RecipeBasicInfoForm({ register, errors, watch, setValue,
         </div>
 
         <div className="form-group">
-          <label className="form-label required" htmlFor="warehouseId">Kitchen / Warehouse</label>
+          <label className="form-label" htmlFor="warehouseId">Kitchen / Warehouse</label>
           <select id="warehouseId" className={`form-control ${errors.warehouseId ? 'error' : ''}`} disabled={disabled || warehousesLoading} {...register('warehouseId')}>
-            <option value="">Select kitchen...</option>
-            {warehouses.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
+            <option value="">-- Auto assign --</option>
+            {warehouses.map((w) => <option key={w.id} value={w.id}>{w.name}{w.code ? ` (${w.code})` : ''}</option>)}
           </select>
           {errors.warehouseId && <p className="form-error">{errors.warehouseId.message}</p>}
         </div>
@@ -194,14 +291,35 @@ export default function RecipeBasicInfoForm({ register, errors, watch, setValue,
 
         <div className="form-group">
           <label className="form-label required" htmlFor="yieldUnit">Yield Unit</label>
-          <input
-            id="yieldUnit"
-            type="text"
-            className={`form-control ${errors.yieldUnit ? 'error' : ''}`}
-            placeholder="kg"
-            disabled={disabled}
-            {...register('yieldUnit')}
-          />
+          {isCustomYieldUnit ? (
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <input
+                id="yieldUnit"
+                type="text"
+                className={`form-control ${errors.yieldUnit ? 'error' : ''}`}
+                disabled={disabled}
+                {...register('yieldUnit')}
+                style={{ flex: 1 }}
+              />
+              <button type="button" onClick={() => setValue('yieldUnit', 'kg')} style={{ padding: '6px 10px', border: '1px solid #e2e8f0', borderRadius: 6, background: '#f8fafc', cursor: 'pointer', fontSize: '0.75rem' }}>↩</button>
+            </div>
+          ) : (
+            <select id="yieldUnit" className={`form-control ${errors.yieldUnit ? 'error' : ''}`} disabled={disabled}
+              value={currentYieldUnit || ''}
+              onChange={(e) => {
+                if (e.target.value === '__custom_yield__') {
+                  setValue('yieldUnit', 'custom', { shouldDirty: true });
+                } else {
+                  setValue('yieldUnit', e.target.value, { shouldDirty: true });
+                }
+              }}
+              {...(() => { const { ref } = register('yieldUnit'); return { ref }; })()}
+            >
+              <option value="">Select unit...</option>
+              {YIELD_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+              <option value="__custom_yield__">+ Add Custom...</option>
+            </select>
+          )}
           {errors.yieldUnit && <p className="form-error">{errors.yieldUnit.message}</p>}
         </div>
 

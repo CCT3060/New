@@ -2,17 +2,51 @@
  * RecipeCreatePage - Drag-and-drop recipe builder
  * Left: searchable ingredients sidebar | Right: recipe fields + ingredient table
  */
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAllInventoryItems, useCreateRecipe, useWarehouses } from '../hooks/useRecipes';
 import { recipeApi } from '../services/recipe.api';
 
 const fmtCost = (n) =>
-  `Rs. ${parseFloat(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  `₹${parseFloat(n || 0).toFixed(2)}`;
 
-const FOOD_TYPES = ['VEG', 'NON_VEG', 'EGG', 'VEGAN'];
-const FOOD_TYPE_COLORS = { VEG: '#16a34a', NON_VEG: '#dc2626', EGG: '#d97706', VEGAN: '#059669' };
+const CAT_COLORS = {
+  Vegetable: '#16a34a', Vegetables: '#16a34a', Fruit: '#ea580c', Meat: '#dc2626',
+  Seafood: '#0284c7', Dairy: '#7c3aed', Grain: '#d97706', Spice: '#db2777',
+  Spices: '#db2777', Oil: '#ca8a04', Condiment: '#059669', Condiments: '#059669',
+  Herbs: '#15803d', Default: '#64748b',
+};
+const catColor = (c) => CAT_COLORS[c] || CAT_COLORS.Default;
+
+const FOOD_TYPES = ['VEG', 'NON VEG', 'EGG', 'VEGAN'];
+const FOOD_TYPE_COLORS = { VEG: '#16a34a', 'NON VEG': '#dc2626', EGG: '#d97706', VEGAN: '#059669' };
+
+const RECIPE_CATEGORIES = [
+  'Breakfast', 'Starters', 'Main Course', 'Side Dish', 'Rice & Biryani',
+  'Breads', 'Soups', 'Salads', 'Desserts', 'Beverages',
+  'Snacks', 'Condiments', 'Dairy', 'General', 'Dal', 'Curries', 'Rice Dishes',
+  'Light Meals', 'Other',
+];
+
+const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'BEVERAGE', 'DESSERT'];
+
+const YIELD_UNITS = ['kg', 'g', 'litre', 'ml', 'pcs', 'portion', 'serving', 'cup', 'tbsp', 'tsp', 'nos', 'batch', 'tray', 'Custom...'];
+
+// Hook to fetch company kitchens as warehouses (uses company_token from localStorage)
+function useCompanyWarehouses() {
+  const [companyWarehouses, setCompanyWarehouses] = useState([]);
+  useMemo(() => {
+    const token = localStorage.getItem('company_token');
+    if (!token) return;
+    fetch('/api/company/warehouses', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => { if (d.success && Array.isArray(d.data?.warehouses)) setCompanyWarehouses(d.data.warehouses); })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return companyWarehouses;
+}
 
 const ErrorMsg = ({ msg }) =>
   msg ? <p style={{ color: '#dc2626', fontSize: '0.72rem', marginTop: 3 }}>{msg}</p> : null;
@@ -22,16 +56,23 @@ export default function RecipeCreatePage() {
   const dragItem = useRef(null);
 
   const [search, setSearch] = useState('');
+  const [catFilter, setCatFilter] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
 
   const [fields, setFields] = useState({
     recipeName: '',
+    category: 'General',
+    customCategory: '',
+    mealType: 'BREAKFAST',
+    customMealType: '',
     foodType: 'VEG',
-    standardPax: 4,
+    customFoodType: '',
+    standardPax: 100,
     yieldQty: '',
     yieldUnit: 'kg',
+    customYieldUnit: '',
     warehouseId: '',
   });
 
@@ -42,13 +83,23 @@ export default function RecipeCreatePage() {
   const { mutateAsync: createRecipe } = useCreateRecipe();
 
   const { data: warehousesData } = useWarehouses();
-  const warehouses = warehousesData?.warehouses ?? warehousesData ?? [];
+  const kitchenWarehouses = warehousesData?.warehouses ?? warehousesData ?? [];
+  const companyKitchens = useCompanyWarehouses();
+  // Merge company kitchens with kitchen warehouses (dedupe by id)
+  const warehouses = useMemo(() => {
+    const all = [...(companyKitchens || []), ...(kitchenWarehouses || [])];
+    const seen = new Set();
+    return all.filter(w => { if (seen.has(w.id)) return false; seen.add(w.id); return true; });
+  }, [companyKitchens, kitchenWarehouses]);
 
-  const filteredItems = allItems.filter(
-    (item) =>
-      item.itemName.toLowerCase().includes(search.toLowerCase()) ||
-      item.itemCode.toLowerCase().includes(search.toLowerCase())
-  );
+  const categories = useMemo(() => [...new Set(allItems.map(i => i.category).filter(Boolean))].sort(), [allItems]);
+
+  const filteredItems = useMemo(() => allItems.filter((item) => {
+    const q = search.toLowerCase();
+    const matchSearch = !search || item.itemName.toLowerCase().includes(q) || item.itemCode.toLowerCase().includes(q);
+    const matchCat = !catFilter || item.category === catFilter;
+    return matchSearch && matchCat;
+  }), [allItems, search, catFilter]);
 
   const setField = (key, value) => {
     setFields((f) => ({ ...f, [key]: value }));
@@ -110,11 +161,15 @@ export default function RecipeCreatePage() {
     const e = {};
     if (!fields.recipeName.trim()) e.recipeName = 'Recipe name is required';
     if (!fields.foodType) e.foodType = 'Food type is required';
+    if (fields.foodType === 'Custom...' && !fields.customFoodType.trim()) e.foodType = 'Custom food type is required';
     if (!fields.standardPax || parseInt(fields.standardPax) < 1)
       e.standardPax = 'Standard pax must be at least 1';
     if (!fields.yieldQty || parseFloat(fields.yieldQty) <= 0)
       e.yieldQty = 'Yield quantity must be a positive number';
     if (!fields.yieldUnit.trim()) e.yieldUnit = 'Yield unit is required';
+    if (fields.yieldUnit === 'Custom...' && !fields.customYieldUnit.trim()) e.yieldUnit = 'Custom yield unit value is required';
+    if (fields.category === 'Custom...' && !fields.customCategory.trim()) e.category = 'Custom category value is required';
+    if (fields.mealType === 'Custom...' && !fields.customMealType.trim()) e.mealType = 'Custom meal type value is required';
     return e;
   };
 
@@ -134,13 +189,20 @@ export default function RecipeCreatePage() {
         .replace(/[^A-Z0-9]/g, '-')
         .slice(0, 18)}-${Date.now().toString().slice(-4)}`;
 
+      const effectiveFoodType = fields.foodType === 'Custom...' ? (fields.customFoodType.trim() || 'VEG') : fields.foodType;
+      const effectiveYieldUnit = fields.yieldUnit === 'Custom...' ? (fields.customYieldUnit.trim() || 'portion') : fields.yieldUnit;
+      const effectiveCategory = fields.category === 'Custom...' ? (fields.customCategory.trim() || 'General') : fields.category;
+      const effectiveMealType = fields.mealType === 'Custom...' ? (fields.customMealType.trim().toUpperCase() || 'LUNCH') : fields.mealType;
+
       const payload = {
         recipeCode: code,
         recipeName: fields.recipeName.trim(),
-        foodType: fields.foodType,
-        standardPax: parseInt(fields.standardPax) || 4,
+        category: effectiveCategory || 'General',
+        mealType: effectiveMealType || 'BREAKFAST',
+        foodType: effectiveFoodType,
+        standardPax: parseInt(fields.standardPax) || 100,
         yieldQty: parseFloat(fields.yieldQty),
-        yieldUnit: fields.yieldUnit.trim(),
+        yieldUnit: effectiveYieldUnit,
         status: 'ACTIVE',
       };
       if (fields.warehouseId) payload.warehouseId = fields.warehouseId;
@@ -164,10 +226,16 @@ export default function RecipeCreatePage() {
         // Reset form so user can immediately add another recipe
         setFields({
           recipeName: '',
+          category: 'General',
+          customCategory: '',
+          mealType: 'BREAKFAST',
+          customMealType: '',
           foodType: 'VEG',
-          standardPax: 4,
+          customFoodType: '',
+          standardPax: 100,
           yieldQty: '',
           yieldUnit: 'kg',
+          customYieldUnit: '',
           warehouseId: '',
         });
         setIngredients([]);
@@ -210,7 +278,7 @@ export default function RecipeCreatePage() {
 
       {/* -- LEFT SIDEBAR: Ingredients -- */}
       <div style={{
-        width: 260,
+        width: 270,
         background: '#fff',
         borderRight: '1px solid #e2e8f0',
         display: 'flex',
@@ -218,54 +286,97 @@ export default function RecipeCreatePage() {
         flexShrink: 0,
         boxShadow: '2px 0 8px rgba(0,0,0,0.04)',
       }}>
-        <div style={{ padding: '16px 16px 10px', borderBottom: '1px solid #f1f5f9' }}>
-          <div style={{ fontWeight: 700, fontSize: '0.8rem', color: '#64748b', marginBottom: 10, letterSpacing: '0.07em', textTransform: 'uppercase' }}>
-            Ingredients
+        <div style={{ padding: '14px 14px 10px', borderBottom: '1px solid #f1f5f9' }}>
+          <div style={{ fontWeight: 700, fontSize: '0.75rem', color: '#64748b', marginBottom: 8, letterSpacing: '0.07em', textTransform: 'uppercase' }}>
+            🧂 Ingredients ({allItems.length})
           </div>
           <input
             type="text"
-            placeholder="Search ingredients..."
+            placeholder="🔍 Search by name or code…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #e2e8f0', borderRadius: 7, fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
+            style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #e2e8f0', borderRadius: 7, fontSize: '0.82rem', outline: 'none', boxSizing: 'border-box', marginBottom: 7 }}
           />
+          <select
+            value={catFilter}
+            onChange={(e) => setCatFilter(e.target.value)}
+            style={{ width: '100%', padding: '6px 10px', border: '1.5px solid #e2e8f0', borderRadius: 7, fontSize: '0.8rem', outline: 'none', boxSizing: 'border-box', background: '#fff' }}
+          >
+            <option value="">All Categories</option>
+            {categories.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
         </div>
 
-        <p style={{ padding: '8px 16px 4px', fontSize: '0.72rem', color: '#94a3b8' }}>
-          Drag item into the recipe area below
-        </p>
+        <div style={{ padding: '6px 14px 4px', fontSize: '0.69rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span>↕ Drag to add</span>
+          {filteredItems.length > 0 && <span style={{ marginLeft: 'auto', color: '#cbd5e1' }}>{filteredItems.length} shown</span>}
+        </div>
 
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {itemsLoading && (
-            <p style={{ padding: 16, color: '#94a3b8', fontSize: '0.8rem' }}>Loading...</p>
-          )}
-          {!itemsLoading && filteredItems.length === 0 && (
-            <p style={{ padding: 16, color: '#94a3b8', fontSize: '0.8rem' }}>No items found</p>
-          )}
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              draggable
-              onDragStart={(e) => handleDragStart(e, item)}
-              title="Drag to add"
-              style={{
-                padding: '10px 16px',
-                cursor: 'grab',
-                borderBottom: '1px solid #f1f5f9',
-                userSelect: 'none',
-                transition: 'background 120ms',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#eff6ff')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-            >
-              <div style={{ fontWeight: 500, fontSize: '0.85rem', color: '#1e293b' }}>
-                {item.itemName}
-              </div>
-              <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: 2 }}>
-                {item.unit} &nbsp;&middot;&nbsp; {fmtCost(item.costPerUnit)}/unit
-              </div>
+            <div style={{ padding: 20, textAlign: 'center' }}>
+              <div style={{ color: '#94a3b8', fontSize: '0.8rem' }}>⏳ Loading ingredients…</div>
             </div>
-          ))}
+          )}
+          {!itemsLoading && allItems.length === 0 && (
+            <div style={{ padding: '24px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: '1.8rem', marginBottom: 8 }}>🧂</div>
+              <div style={{ color: '#64748b', fontSize: '0.8rem', fontWeight: 600, marginBottom: 4 }}>No ingredients found</div>
+              <div style={{ color: '#94a3b8', fontSize: '0.72rem' }}>Add ingredients in the Ingredients tab first</div>
+            </div>
+          )}
+          {!itemsLoading && allItems.length > 0 && filteredItems.length === 0 && (
+            <div style={{ padding: '20px 16px', textAlign: 'center', color: '#94a3b8', fontSize: '0.8rem' }}>
+              No ingredients match your search
+            </div>
+          )}
+          {filteredItems.map((item) => {
+            const alreadyAdded = ingredients.some(i => i.inventoryItemId === item.id);
+            return (
+              <div
+                key={item.id}
+                draggable={!alreadyAdded}
+                onDragStart={(e) => { if (!alreadyAdded) handleDragStart(e, item); }}
+                onClick={() => {
+                  if (alreadyAdded) { toast.info(`${item.itemName} already added`); return; }
+                  setIngredients(prev => [...prev, {
+                    inventoryItemId: item.id, name: item.itemName,
+                    grossQty: 1, unit: item.unit, costPerUnit: parseFloat(item.costPerUnit) || 0,
+                  }]);
+                  toast.success(`${item.itemName} added`);
+                }}
+                title={alreadyAdded ? 'Already added' : 'Click or drag to add'}
+                style={{
+                  padding: '9px 14px',
+                  cursor: alreadyAdded ? 'default' : 'grab',
+                  borderBottom: '1px solid #f8fafc',
+                  userSelect: 'none',
+                  transition: 'background 100ms',
+                  opacity: alreadyAdded ? 0.45 : 1,
+                  background: alreadyAdded ? '#f8fafc' : undefined,
+                }}
+                onMouseEnter={(e) => { if (!alreadyAdded) e.currentTarget.style.background = '#f0fdf4'; }}
+                onMouseLeave={(e) => { if (!alreadyAdded) e.currentTarget.style.background = ''; }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                  {item.category && (
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: catColor(item.category), flexShrink: 0, display: 'inline-block' }} />
+                  )}
+                  <span style={{ fontWeight: 600, fontSize: '0.82rem', color: '#1e293b', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {item.itemName}
+                  </span>
+                  {alreadyAdded && <span style={{ fontSize: '0.65rem', color: '#059669', fontWeight: 700 }}>✓</span>}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>{item.unit}</span>
+                  <span style={{ fontSize: '0.68rem', color: '#059669', fontWeight: 600 }}>{fmtCost(item.costPerUnit)}/{item.unit}</span>
+                </div>
+                {item.category && (
+                  <span style={{ fontSize: '0.62rem', color: catColor(item.category), opacity: 0.8 }}>{item.category}</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -299,8 +410,8 @@ export default function RecipeCreatePage() {
         {/* Recipe fields */}
         <div style={{ padding: '16px 24px 14px', background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
 
-          {/* Row 1: Name, Food Type */}
-          <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: 14, marginBottom: 14 }}>
+          {/* Row 1: Name, Category, Food Type */}
+          <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1fr', gap: 14, marginBottom: 14 }}>
             <div>
               <label style={labelStyle}>
                 Recipe Name <span style={{ color: '#dc2626' }}>*</span>
@@ -315,22 +426,74 @@ export default function RecipeCreatePage() {
               <ErrorMsg msg={errors.recipeName} />
             </div>
             <div>
+              <label style={labelStyle}>Category <span style={{ color: '#dc2626' }}>*</span></label>
+              <select
+                value={fields.category}
+                onChange={(e) => setField('category', e.target.value)}
+                style={inputStyle('category')}
+              >
+                {RECIPE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                <option value="Custom...">Custom...</option>
+              </select>
+              {fields.category === 'Custom...' && (
+                <input
+                  type="text"
+                  placeholder="e.g. Thali, Fusion..."
+                  value={fields.customCategory}
+                  onChange={(e) => setField('customCategory', e.target.value)}
+                  style={{ ...inputStyle('customCategory'), marginTop: 5 }}
+                />
+              )}
+              <ErrorMsg msg={errors.category} />
+            </div>
+            <div>
               <label style={labelStyle}>Food Type <span style={{ color: '#dc2626' }}>*</span></label>
               <select
                 value={fields.foodType}
                 onChange={(e) => setField('foodType', e.target.value)}
-                style={{ ...inputStyle('foodType'), color: FOOD_TYPE_COLORS[fields.foodType] || 'inherit', fontWeight: 600 }}
+                style={{ ...inputStyle('foodType'), color: FOOD_TYPE_COLORS[fields.foodType] || '#0f172a', fontWeight: 600 }}
               >
-                {FOOD_TYPES.map((t) => <option key={t} value={t}>{t.replace('_', ' ')}</option>)}
+                {FOOD_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                <option value="Custom...">Custom...</option>
               </select>
+              {fields.foodType === 'Custom...' && (
+                <input
+                  type="text"
+                  placeholder="e.g. Jain, Keto..."
+                  value={fields.customFoodType}
+                  onChange={(e) => setField('customFoodType', e.target.value)}
+                  style={{ ...inputStyle('customFoodType'), marginTop: 5 }}
+                />
+              )}
               <ErrorMsg msg={errors.foodType} />
             </div>
           </div>
 
-          {/* Row 2: Warehouse, Pax, Yield Qty, Yield Unit */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 0.8fr 0.8fr 0.8fr', gap: 14 }}>
+          {/* Row 2: Meal Type, Kitchen, Pax, Yield Qty, Yield Unit */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 0.8fr 0.8fr 1fr', gap: 14 }}>
             <div>
-              <label style={labelStyle}>Warehouse / Kitchen <span style={{ fontWeight: 400, color: '#94a3b8' }}>(optional)</span></label>
+              <label style={labelStyle}>Meal Type <span style={{ color: '#dc2626' }}>*</span></label>
+              <select
+                value={fields.mealType}
+                onChange={(e) => setField('mealType', e.target.value)}
+                style={inputStyle('mealType')}
+              >
+                {MEAL_TYPES.map(m => <option key={m} value={m}>{m}</option>)}
+                <option value="Custom...">Custom...</option>
+              </select>
+              {fields.mealType === 'Custom...' && (
+                <input
+                  type="text"
+                  placeholder="e.g. TEATIME, BRUNCH..."
+                  value={fields.customMealType}
+                  onChange={(e) => setField('customMealType', e.target.value)}
+                  style={{ ...inputStyle('customMealType'), marginTop: 5 }}
+                />
+              )}
+              <ErrorMsg msg={errors.mealType} />
+            </div>
+            <div>
+              <label style={labelStyle}>Kitchen <span style={{ fontWeight: 400, color: '#94a3b8' }}>(optional)</span></label>
               <select
                 value={fields.warehouseId}
                 onChange={(e) => setField('warehouseId', e.target.value)}
@@ -369,13 +532,22 @@ export default function RecipeCreatePage() {
             </div>
             <div>
               <label style={labelStyle}>Yield Unit <span style={{ color: '#dc2626' }}>*</span></label>
-              <input
-                type="text"
-                placeholder="kg / litre / pcs"
+              <select
                 value={fields.yieldUnit}
                 onChange={(e) => setField('yieldUnit', e.target.value)}
                 style={inputStyle('yieldUnit')}
-              />
+              >
+                {YIELD_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+              </select>
+              {fields.yieldUnit === 'Custom...' && (
+                <input
+                  type="text"
+                  placeholder="e.g. batch, tray..."
+                  value={fields.customYieldUnit}
+                  onChange={(e) => setField('customYieldUnit', e.target.value)}
+                  style={{ ...inputStyle('customYieldUnit'), marginTop: 5 }}
+                />
+              )}
               <ErrorMsg msg={errors.yieldUnit} />
             </div>
           </div>

@@ -491,6 +491,8 @@ const scaleRecipe = async (recipeId, targetPax) => {
   return {
     recipeId: recipe.id, recipeCode: recipe.recipeCode, recipeName: recipe.recipeName,
     standardPax: recipe.standardPax, targetPax,
+    standardYieldQty: parseFloat(recipe.yieldQty),
+    yieldUnit: recipe.yieldUnit,
     scaleFactor: parseFloat(scaleFactor.toFixed(4)),
     scaledIngredients,
     costEstimate: {

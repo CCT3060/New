@@ -10,24 +10,26 @@ const errorMiddleware = (err, req, res, next) => {
     method: req.method,
   });
 
-  // Prisma known errors
+  // MySQL known errors
   if (err.code) {
     switch (err.code) {
-      case 'P2002':
+      case 'ER_DUP_ENTRY':
         return res.status(409).json({
           success: false,
           message: 'A record with this value already exists',
-          field: err.meta?.target?.[0] || 'unknown',
+          field: err.sqlMessage || 'unknown',
         });
-      case 'P2025':
-        return res.status(404).json({
-          success: false,
-          message: 'Record not found',
-        });
-      case 'P2003':
+      case 'ER_NO_REFERENCED_ROW':
+      case 'ER_NO_REFERENCED_ROW_2':
         return res.status(400).json({
           success: false,
           message: 'Invalid reference — related record not found',
+        });
+      case 'ER_ROW_IS_REFERENCED':
+      case 'ER_ROW_IS_REFERENCED_2':
+        return res.status(400).json({
+          success: false,
+          message: 'Cannot delete — record is referenced by other data',
         });
       default:
         break;

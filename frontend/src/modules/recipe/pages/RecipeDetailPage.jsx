@@ -4,7 +4,7 @@
  */
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useRecipe, useRecipeCosting } from '../hooks/useRecipes';
+import { useRecipe, useRecipeCosting, useAddIngredient, useUpdateIngredient, useRemoveIngredient } from '../hooks/useRecipes';
 import RecipeStatusBadge from '../components/RecipeStatusBadge';
 import RecipeIngredientsTable from '../components/RecipeIngredientsTable';
 import RecipeStepsEditor from '../components/RecipeStepsEditor';
@@ -56,6 +56,10 @@ export default function RecipeDetailPage() {
   const { mutateAsync: createVersion, isPending: versionLoading } = useCreateNewVersion(id);
   const { mutateAsync: scaleRecipe, isPending: scaleLoading } = useScaleRecipe(id);
   const canEdit = recipe && ['ADMIN', 'OPS_MANAGER'].includes(user?.role);
+
+  const { mutateAsync: addIngredient } = useAddIngredient(id);
+  const { mutateAsync: updateIngredient } = useUpdateIngredient(id);
+  const { mutateAsync: removeIngredient } = useRemoveIngredient(id);
 
   if (isLoading) {
     return (
@@ -177,7 +181,10 @@ export default function RecipeDetailPage() {
           <RecipeIngredientsTable
             ingredients={recipe.ingredients || []}
             warehouseId={recipe.warehouseId}
-            disabled
+            disabled={!canEdit}
+            onAdd={canEdit ? addIngredient : undefined}
+            onUpdate={canEdit ? updateIngredient : undefined}
+            onRemove={canEdit ? removeIngredient : undefined}
           />
         )}
 

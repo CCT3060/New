@@ -42,7 +42,7 @@ const createClient = async ({ name, adminEmail, adminPassword }) => {
   const id = uuidv4();
   const passwordHash = await bcrypt.hash(adminPassword, SALT_ROUNDS);
   await db.query(
-    'INSERT INTO clients (id, name, adminEmail, passwordHash, isActive) VALUES (?, ?, ?, ?, 1)',
+    'INSERT INTO clients (id, name, adminEmail, passwordHash, isActive, updatedAt) VALUES (?, ?, ?, ?, 1, NOW())',
     [id, name, adminEmail, passwordHash]
   );
   const [[client]] = await db.query(

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useCompanyAuth } from '../../contexts/CompanyAuthContext';
 
 const MEAL_COLORS = {
@@ -6,14 +6,12 @@ const MEAL_COLORS = {
   SNACK: '#f97316', BEVERAGE: '#06b6d4', DESSERT: '#ec4899',
 };
 
-function isoWeekDates() {
-  const now = new Date();
-  const day = now.getDay();
-  const diffToMon = day === 0 ? -6 : 1 - day;
-  const mon = new Date(now); mon.setDate(now.getDate() + diffToMon);
-  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
-  return [mon.toISOString().split('T')[0], sun.toISOString().split('T')[0]];
+// Use local date to avoid UTC timezone offset
+function localDateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
+
+function todayStr() { return localDateStr(new Date()); }
 
 function fmtDate(dateStr) {
   return new Date(dateStr + 'T12:00:00')
@@ -22,17 +20,21 @@ function fmtDate(dateStr) {
 
 export default function RequisitionTab() {
   const { companyFetch } = useCompanyAuth();
-  const [defaultFrom, defaultTo] = isoWeekDates();
+  const today = todayStr();
 
-  const [from, setFrom] = useState(defaultFrom);
-  const [to, setTo]   = useState(defaultTo);
+  const [from, setFrom] = useState(today);
+  const [to, setTo]   = useState(today);
   const [loading, setLoading] = useState(false);
   const [result, setResult]   = useState(null);
   const [error, setError]     = useState('');
   const [showBreakdown, setShowBreakdown] = useState(false);
+  // Editable overrides: { [inventoryItemId]: { grossQty, netQty } }
+  const [overrides, setOverrides] = useState({});
+  const [editingId, setEditingId] = useState(null);
+  const editRef = useRef(null);
 
   const handleGenerate = async () => {
-    setLoading(true); setError(''); setResult(null);
+    setLoading(true); setError(''); setResult(null); setOverrides({});
     try {
       const d = await companyFetch(`/pax/requisition?from=${from}&to=${to}`);
       setResult(d);
@@ -43,12 +45,35 @@ export default function RequisitionTab() {
     }
   };
 
+  // Apply edited value
+  const handleEditSave = (itemId, field, value) => {
+    const num = parseFloat(value);
+    if (isNaN(num) || num < 0) return;
+    setOverrides(prev => ({
+      ...prev,
+      [itemId]: { ...prev[itemId], [field]: num },
+    }));
+    setEditingId(null);
+  };
+
+  // Get effective value (override or original)
+  const getVal = (item, field) => {
+    const ov = overrides[item.inventoryItemId];
+    if (ov && ov[field] !== undefined) return ov[field];
+    return item[field];
+  };
+
   const handleExportCSV = () => {
     if (!result) return;
-    const header = ['Item Code', 'Ingredient Name', 'Total Gross Qty', 'Total Net Qty', 'Unit'];
-    const rows = result.items.map(i => [
-      i.itemCode, `"${i.itemName}"`, i.totalGrossQty, i.totalNetQty, i.unit,
-    ]);
+    const header = ['Item Code', 'Ingredient Name', 'Total Gross Qty', 'Total Net Qty', 'Unit', 'Unit Cost', 'Total Value'];
+    const rows = result.items.map(i => {
+      const gross = getVal(i, 'totalGrossQty');
+      const net = getVal(i, 'totalNetQty');
+      const val = net * (i.unitCost || 0);
+      return [
+        i.itemCode, `"${i.itemName}"`, gross, net, i.unit, i.unitCost || 0, val.toFixed(2),
+      ];
+    });
     const csv = [header, ...rows].map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -79,6 +104,17 @@ export default function RequisitionTab() {
         padding: '20px 24px', marginBottom: 24, display: 'flex', alignItems: 'center',
         gap: 16, flexWrap: 'wrap', boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
       }}>
+        {/* Quick selects */}
+        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+          {[
+            ['Today', () => { const t = todayStr(); setFrom(t); setTo(t); }],
+            ['Tomorrow', () => { const d = new Date(); d.setDate(d.getDate() + 1); const t = localDateStr(d); setFrom(t); setTo(t); }],
+          ].map(([label, fn]) => (
+            <button key={label} onClick={fn}
+              style={{ padding: '5px 11px', border: '1.5px solid #e2e8f0', borderRadius: 7, background: '#f8fafc', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600, color: '#475569' }}
+            >{label}</button>
+          ))}
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b' }}>From</label>
           <input type="date" value={from} onChange={e => setFrom(e.target.value)}
@@ -142,13 +178,19 @@ export default function RequisitionTab() {
 
           {result.items.length > 0 && (
             <>
-              {/* Ingredients table */}
+              {/* Ingredients table — editable */}
               <div style={{ background: '#fff', borderRadius: 12, border: '1.5px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: 24 }}>
                 <div style={{ padding: '16px 20px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <h3 style={{ margin: 0, fontWeight: 700, fontSize: '0.95rem', color: '#0f172a' }}>Total Ingredients Required</h3>
                     <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: '#64748b' }}>
                       Aggregated across all pax entries for {fmtDate(result.from)} – {fmtDate(result.to)}
+                      {Object.keys(overrides).length > 0 && (
+                        <span style={{ marginLeft: 8, color: '#d97706', fontWeight: 700 }}>
+                          · {Object.keys(overrides).length} edited
+                          <button onClick={() => setOverrides({})} style={{ marginLeft: 6, background: 'none', border: 'none', color: '#6366f1', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 700, textDecoration: 'underline' }}>Reset all</button>
+                        </span>
+                      )}
                     </p>
                   </div>
                   <span style={{ background: '#f1f5f9', color: '#475569', padding: '3px 12px', borderRadius: 20, fontSize: '0.72rem', fontWeight: 700 }}>
@@ -159,49 +201,105 @@ export default function RequisitionTab() {
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ background: '#1e293b' }}>
-                        {['#', 'Item Code', 'Ingredient Name', 'Gross Qty', 'Net Qty', 'Unit'].map(h => (
+                        {['#', 'Item Code', 'Ingredient Name', 'Gross Qty', 'Net Qty', 'Unit', 'Rate', 'Value (₹)'].map(h => (
                           <th key={h} style={{
                             padding: '10px 14px', color: '#fff', fontWeight: 700,
                             fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em',
-                            textAlign: h === '#' ? 'center' : h.includes('Qty') ? 'right' : 'left',
+                            textAlign: h === '#' ? 'center' : (h.includes('Qty') || h.includes('Rate') || h.includes('Value')) ? 'right' : 'left',
                             borderRight: '1px solid #334155',
                           }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {result.items.map((item, idx) => (
-                        <tr key={item.inventoryItemId || idx}
-                          style={{ borderBottom: '1px solid #f1f5f9' }}
-                          onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
-                          onMouseLeave={e => e.currentTarget.style.background = ''}
-                        >
-                          <td style={{ padding: '9px 14px', textAlign: 'center', color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600 }}>{idx + 1}</td>
-                          <td style={{ padding: '9px 14px' }}>
-                            {item.itemCode
-                              ? <span style={{ background: '#fffbeb', color: '#d97706', padding: '2px 8px', borderRadius: 5, fontSize: '0.72rem', fontWeight: 700, fontFamily: 'monospace' }}>{item.itemCode}</span>
-                              : <span style={{ color: '#cbd5e1' }}>—</span>}
-                          </td>
-                          <td style={{ padding: '9px 14px', fontWeight: 600, color: '#0f172a', fontSize: '0.85rem' }}>{item.itemName}</td>
-                          <td style={{ padding: '9px 14px', textAlign: 'right', fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>
-                            {item.totalGrossQty.toLocaleString('en-IN', { maximumFractionDigits: 3 })}
-                          </td>
-                          <td style={{ padding: '9px 14px', textAlign: 'right', color: '#475569', fontSize: '0.82rem' }}>
-                            {item.totalNetQty.toLocaleString('en-IN', { maximumFractionDigits: 3 })}
-                          </td>
-                          <td style={{ padding: '9px 14px' }}>
-                            <span style={{ background: '#f1f5f9', color: '#475569', padding: '2px 8px', borderRadius: 5, fontSize: '0.72rem', fontWeight: 700 }}>
-                              {item.unit || '—'}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {result.items.map((item, idx) => {
+                        const grossQty = getVal(item, 'totalGrossQty');
+                        const netQty = getVal(item, 'totalNetQty');
+                        const unitCost = item.unitCost || 0;
+                        const value = netQty * unitCost;
+                        const isEdited = !!overrides[item.inventoryItemId];
+                        const isEditing = editingId === item.inventoryItemId;
+
+                        return (
+                          <tr key={item.inventoryItemId || idx}
+                            style={{ borderBottom: '1px solid #f1f5f9', background: isEdited ? '#fffbeb' : '' }}
+                            onMouseEnter={e => { if (!isEdited) e.currentTarget.style.background = '#f8fafc'; }}
+                            onMouseLeave={e => { if (!isEdited) e.currentTarget.style.background = ''; }}
+                          >
+                            <td style={{ padding: '9px 14px', textAlign: 'center', color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600 }}>{idx + 1}</td>
+                            <td style={{ padding: '9px 14px' }}>
+                              {item.itemCode
+                                ? <span style={{ background: '#fffbeb', color: '#d97706', padding: '2px 8px', borderRadius: 5, fontSize: '0.72rem', fontWeight: 700, fontFamily: 'monospace' }}>{item.itemCode}</span>
+                                : <span style={{ color: '#cbd5e1' }}>—</span>}
+                            </td>
+                            <td style={{ padding: '9px 14px', fontWeight: 600, color: '#0f172a', fontSize: '0.85rem' }}>{item.itemName}</td>
+                            {/* Editable Gross Qty */}
+                            <td
+                              style={{ padding: '9px 14px', textAlign: 'right', fontWeight: 700, color: '#0f172a', fontSize: '0.85rem', cursor: 'pointer' }}
+                              onClick={() => { setEditingId(item.inventoryItemId + ':gross'); }}
+                            >
+                              {editingId === item.inventoryItemId + ':gross' ? (
+                                <input
+                                  ref={editRef}
+                                  autoFocus
+                                  type="number" min="0" step="0.001"
+                                  defaultValue={grossQty}
+                                  onBlur={e => handleEditSave(item.inventoryItemId, 'totalGrossQty', e.target.value)}
+                                  onKeyDown={e => { if (e.key === 'Enter') handleEditSave(item.inventoryItemId, 'totalGrossQty', e.target.value); if (e.key === 'Escape') setEditingId(null); }}
+                                  style={{ width: 80, padding: '2px 6px', border: '1.5px solid #6366f1', borderRadius: 4, fontSize: '0.82rem', textAlign: 'right' }}
+                                />
+                              ) : (
+                                <span title="Click to edit">{parseFloat(grossQty).toLocaleString('en-IN', { maximumFractionDigits: 3 })}</span>
+                              )}
+                            </td>
+                            {/* Editable Net Qty */}
+                            <td
+                              style={{ padding: '9px 14px', textAlign: 'right', color: '#475569', fontSize: '0.82rem', cursor: 'pointer' }}
+                              onClick={() => { setEditingId(item.inventoryItemId + ':net'); }}
+                            >
+                              {editingId === item.inventoryItemId + ':net' ? (
+                                <input
+                                  autoFocus
+                                  type="number" min="0" step="0.001"
+                                  defaultValue={netQty}
+                                  onBlur={e => handleEditSave(item.inventoryItemId, 'totalNetQty', e.target.value)}
+                                  onKeyDown={e => { if (e.key === 'Enter') handleEditSave(item.inventoryItemId, 'totalNetQty', e.target.value); if (e.key === 'Escape') setEditingId(null); }}
+                                  style={{ width: 80, padding: '2px 6px', border: '1.5px solid #6366f1', borderRadius: 4, fontSize: '0.82rem', textAlign: 'right' }}
+                                />
+                              ) : (
+                                <span title="Click to edit">{parseFloat(netQty).toLocaleString('en-IN', { maximumFractionDigits: 3 })}</span>
+                              )}
+                            </td>
+                            <td style={{ padding: '9px 14px' }}>
+                              <span style={{ background: '#f1f5f9', color: '#475569', padding: '2px 8px', borderRadius: 5, fontSize: '0.72rem', fontWeight: 700 }}>
+                                {item.unit || '—'}
+                              </span>
+                            </td>
+                            <td style={{ padding: '9px 14px', textAlign: 'right', color: '#64748b', fontSize: '0.78rem' }}>
+                              {unitCost > 0 ? `₹${unitCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : '—'}
+                            </td>
+                            <td style={{ padding: '9px 14px', textAlign: 'right', fontWeight: 700, color: value > 0 ? '#065f46' : '#94a3b8', fontSize: '0.82rem' }}>
+                              {value > 0 ? `₹${value.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : '—'}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                     <tfoot>
-                      <tr style={{ background: '#f8fafc', borderTop: '2px solid #e2e8f0' }}>
-                        <td colSpan={3} style={{ padding: '10px 14px', fontWeight: 700, color: '#1e293b', fontSize: '0.82rem' }}>Total Ingredients: {result.items.length}</td>
-                        <td colSpan={3} style={{ padding: '10px 14px', textAlign: 'left', color: '#64748b', fontSize: '0.72rem' }}>
-                          Gross qty = raw quantity including wastage allowance &nbsp;·&nbsp; Net qty = usable quantity after wastage
+                      <tr style={{ background: '#f0fdf4', borderTop: '2px solid #e2e8f0' }}>
+                        <td colSpan={3} style={{ padding: '10px 14px', fontWeight: 700, color: '#1e293b', fontSize: '0.82rem' }}>
+                          Grand Total: {result.items.length} items
+                        </td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 800, color: '#0f172a', fontSize: '0.85rem' }}>
+                          {result.items.reduce((s, i) => s + getVal(i, 'totalGrossQty'), 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                        </td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 700, color: '#475569', fontSize: '0.82rem' }}>
+                          {result.items.reduce((s, i) => s + getVal(i, 'totalNetQty'), 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 800, color: '#065f46', fontSize: '0.88rem' }}>
+                          ₹{result.items.reduce((s, i) => s + getVal(i, 'totalNetQty') * (i.unitCost || 0), 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                         </td>
                       </tr>
                     </tfoot>

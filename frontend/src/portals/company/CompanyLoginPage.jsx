@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useCompanyAuth } from '../../contexts/CompanyAuthContext';
 import { toast } from 'react-toastify';
 
@@ -12,8 +12,7 @@ export default function CompanyLoginPage() {
   const [error, setError] = useState('');
 
   if (companyUser) {
-    navigate('/company/dashboard', { replace: true });
-    return null;
+    return <Navigate to="/company/dashboard" replace />;
   }
 
   const handleSubmit = async (e) => {

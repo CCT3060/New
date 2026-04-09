@@ -2,7 +2,7 @@ const mysql = require('mysql2/promise');
 const logger = require('../utils/logger');
 
 // Parse DATABASE_URL safely — handles @ in passwords by splitting on the LAST @
-// Format: mysql://user:password@host:port/database
+// Format: mysql://user:password@host:port/database (URL-encoded password)
 function parseMysqlUrl(url) {
   try {
     // Remove the scheme
@@ -14,7 +14,7 @@ function parseMysqlUrl(url) {
     // credentials: split on first :
     const firstColon = credentials.indexOf(':');
     const user = credentials.slice(0, firstColon);
-    const password = credentials.slice(firstColon + 1);
+    const password = decodeURIComponent(credentials.slice(firstColon + 1));
     // hostPart: host:port/dbname
     const slashIdx = hostPart.indexOf('/');
     const hostPort = hostPart.slice(0, slashIdx);

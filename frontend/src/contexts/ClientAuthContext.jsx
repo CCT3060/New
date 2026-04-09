@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+let _handlingAuthError = false;
+
 const ClientAuthContext = createContext(null);
 
 export function ClientAuthProvider({ children }) {
@@ -50,7 +52,16 @@ export function ClientAuthProvider({ children }) {
       },
     });
     const data = await res.json();
-    if (!data.success) throw new Error(data.message || 'Request failed');
+    if (!data.success) {
+      if (res.status === 401 && !_handlingAuthError) {
+        _handlingAuthError = true;
+        localStorage.removeItem('portal_token');
+        localStorage.removeItem('portal_client');
+        setClientAdmin(null);
+        window.location.href = '/portal';
+      }
+      throw new Error(data.message || 'Request failed');
+    }
     return data.data;
   }, []);
 

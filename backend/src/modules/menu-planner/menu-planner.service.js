@@ -1,6 +1,13 @@
 ﻿const { v4: uuidv4 } = require('uuid');
 const db = require('../../db/mysql');
 
+// Convert a Date (or string) to local YYYY-MM-DD, avoiding UTC off-by-one
+function toLocalDate(v) {
+  if (!v) return '';
+  if (typeof v === 'string') return v.split('T')[0];
+  return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2, '0')}-${String(v.getDate()).padStart(2, '0')}`;
+}
+
 //  helpers 
 
 const getDefaultWarehouseId = async () => {
@@ -26,7 +33,7 @@ const mapPlan = (p) => ({
 });
 
 const ITEM_RECIPE_COLS = `
-  r.id, r.recipeCode, r.recipeName, r.category, r.mealType AS r_mealType,
+  r.id AS r_id, r.recipeCode, r.recipeName, r.category, r.mealType AS r_mealType,
   r.foodType, r.status, r.standardPax, r.yieldQty, r.yieldUnit`;
 
 const getPlanItems = async (menuPlanId, includeIngredients = false) => {
@@ -41,8 +48,8 @@ const getPlanItems = async (menuPlanId, includeIngredients = false) => {
     return items.map(i => ({
       id: i.id, menuPlanId: i.menuPlanId, recipeId: i.recipeId,
       servings: i.servings, notes: i.notes, sortOrder: i.sortOrder,
-      recipe: i.id ? {
-        id: i.recipeId, recipeCode: i.recipeCode, recipeName: i.recipeName,
+      recipe: i.r_id ? {
+        id: i.r_id, recipeCode: i.recipeCode, recipeName: i.recipeName,
         category: i.category, mealType: i.r_mealType, foodType: i.foodType,
         status: i.status, standardPax: i.standardPax, yieldQty: i.yieldQty, yieldUnit: i.yieldUnit,
       } : null,
@@ -63,7 +70,7 @@ const getPlanItems = async (menuPlanId, includeIngredients = false) => {
       id: i.id, menuPlanId: i.menuPlanId, recipeId: i.recipeId,
       servings: i.servings, notes: i.notes, sortOrder: i.sortOrder,
       recipe: {
-        id: i.recipeId, recipeCode: i.recipeCode, recipeName: i.recipeName,
+        id: i.r_id, recipeCode: i.recipeCode, recipeName: i.recipeName,
         category: i.category, mealType: i.r_mealType, foodType: i.foodType,
         status: i.status, standardPax: i.standardPax, yieldQty: i.yieldQty, yieldUnit: i.yieldUnit,
         ingredients: ingredients.map(ri => ({
@@ -216,7 +223,7 @@ const addItem = async (menuPlanId, data) => {
   return {
     id: item.id, menuPlanId: item.menuPlanId, recipeId: item.recipeId,
     servings: item.servings, notes: item.notes, sortOrder: item.sortOrder,
-    recipe: { id: item.recipeId, recipeCode: item.recipeCode, recipeName: item.recipeName, mealType: item.r_mealType, foodType: item.foodType, status: item.status, standardPax: item.standardPax },
+    recipe: { id: item.r_id, recipeCode: item.recipeCode, recipeName: item.recipeName, mealType: item.r_mealType, foodType: item.foodType, status: item.status, standardPax: item.standardPax },
   };
 };
 
@@ -243,14 +250,16 @@ const updateItem = async (menuPlanId, itemId, data) => {
   return {
     id: updated.id, menuPlanId: updated.menuPlanId, recipeId: updated.recipeId,
     servings: updated.servings, notes: updated.notes, sortOrder: updated.sortOrder,
-    recipe: { id: updated.recipeId, recipeCode: updated.recipeCode, recipeName: updated.recipeName, mealType: updated.r_mealType, foodType: updated.foodType },
+    recipe: { id: updated.r_id, recipeCode: updated.recipeCode, recipeName: updated.recipeName, mealType: updated.r_mealType, foodType: updated.foodType },
   };
 };
 
 //  removeItem 
 
 const removeItem = async (menuPlanId, itemId) => {
-  const [[item]] = await db.query('SELECT id FROM menu_plan_items WHERE id = ? AND menuPlanId = ?', [itemId, menuPlanId]);
+  // Look up by itemId alone — UUIDs are globally unique, so planId is only advisory.
+  // This prevents failures when the frontend's plansByKey has a stale/mismatched planId.
+  const [[item]] = await db.query('SELECT id FROM menu_plan_items WHERE id = ?', [itemId]);
   if (!item) throw Object.assign(new Error('Menu plan item not found'), { status: 404 });
   await db.query('DELETE FROM menu_plan_items WHERE id = ?', [itemId]);
 };
@@ -259,7 +268,7 @@ const removeItem = async (menuPlanId, itemId) => {
 
 const findOrCreatePlan = async (planDate, mealType, warehouseId, userId) => {
   const resolvedWarehouseId = warehouseId || await getDefaultWarehouseId();
-  const dateStr = typeof planDate === 'string' ? planDate.split('T')[0] : new Date(planDate).toISOString().split('T')[0];
+  const dateStr = toLocalDate(planDate);
 
   const [[existing]] = await db.query(
     'SELECT id, planName, planDate, mealType, warehouseId FROM menu_plans WHERE mealType = ? AND warehouseId = ? AND isActive = 1 AND DATE(planDate) = ?',
@@ -307,7 +316,7 @@ const dropRecipeOnSlot = async ({ planDate, mealType, warehouseId, recipeId, ser
     item: {
       id: item.id, menuPlanId: item.menuPlanId, recipeId: item.recipeId,
       servings: item.servings, notes: item.notes, sortOrder: item.sortOrder,
-      recipe: { id: item.recipeId, recipeCode: item.recipeCode, recipeName: item.recipeName, mealType: item.r_mealType, foodType: item.foodType, standardPax: item.standardPax },
+      recipe: { id: item.r_id, recipeCode: item.recipeCode, recipeName: item.recipeName, mealType: item.r_mealType, foodType: item.foodType, standardPax: item.standardPax },
     },
     alreadyExists: false,
   };
@@ -336,8 +345,8 @@ const moveItemBetweenSlots = async ({ itemId, sourcePlanId, targetDate, targetMe
 //  getReport 
 
 const getReport = async (dateFrom, dateTo) => {
-  const fromStr = typeof dateFrom === 'string' ? dateFrom.split('T')[0] : new Date(dateFrom).toISOString().split('T')[0];
-  const toStr = typeof dateTo === 'string' ? dateTo.split('T')[0] : new Date(dateTo).toISOString().split('T')[0];
+  const fromStr = toLocalDate(dateFrom);
+  const toStr = toLocalDate(dateTo);
 
   const [planRows] = await db.query(`
     SELECT ${PLAN_COLS}
@@ -386,8 +395,8 @@ const getReport = async (dateFrom, dateTo) => {
 //  clearDateRangePlans 
 
 const clearDateRangePlans = async (dateFrom, dateTo) => {
-  const fromStr = typeof dateFrom === 'string' ? dateFrom.split('T')[0] : new Date(dateFrom).toISOString().split('T')[0];
-  const toStr = typeof dateTo === 'string' ? dateTo.split('T')[0] : new Date(dateTo).toISOString().split('T')[0];
+  const fromStr = toLocalDate(dateFrom);
+  const toStr = toLocalDate(dateTo);
 
   const [result] = await db.query(
     'UPDATE menu_plans SET isActive = 0 WHERE isActive = 1 AND DATE(planDate) >= ? AND DATE(planDate) <= ?',
@@ -399,8 +408,8 @@ const clearDateRangePlans = async (dateFrom, dateTo) => {
 //  duplicateWeek 
 
 const duplicateWeek = async (sourceFrom, sourceTo, targetFrom, userId) => {
-  const sfStr = typeof sourceFrom === 'string' ? sourceFrom.split('T')[0] : new Date(sourceFrom).toISOString().split('T')[0];
-  const stStr = typeof sourceTo === 'string' ? sourceTo.split('T')[0] : new Date(sourceTo).toISOString().split('T')[0];
+  const sfStr = toLocalDate(sourceFrom);
+  const stStr = toLocalDate(sourceTo);
   const tfDate = new Date(targetFrom);
   const sfDate = new Date(sourceFrom);
   const diffMs = tfDate.getTime() - sfDate.getTime();
@@ -415,7 +424,7 @@ const duplicateWeek = async (sourceFrom, sourceTo, targetFrom, userId) => {
 
   for (const plan of sourcePlans) {
     const newDate = new Date(new Date(plan.planDate).getTime() + diffMs);
-    const newDateStr = newDate.toISOString().split('T')[0];
+    const newDateStr = toLocalDate(newDate);
 
     const [[exists]] = await db.query(
       'SELECT id FROM menu_plans WHERE mealType = ? AND warehouseId = ? AND isActive = 1 AND DATE(planDate) = ?',

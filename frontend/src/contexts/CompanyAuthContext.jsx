@@ -1,6 +1,9 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Module-level flag to prevent multiple simultaneous 401 redirects
+let _handlingAuthError = false;
 
 const CompanyAuthContext = createContext(null);
 
@@ -13,6 +16,18 @@ export function CompanyAuthProvider({ children }) {
     const saved = localStorage.getItem('company_user');
     if (token && saved) {
       try { setCompanyUser(JSON.parse(saved)); } catch { localStorage.removeItem('company_token'); }
+      // Always refresh the ck_token so kitchen API tabs work
+      fetch(`${BASE}/company/refresh-ck-token`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success && data.data?.innerToken) {
+            localStorage.setItem('ck_token', data.data.innerToken);
+            localStorage.setItem('ck_user', JSON.stringify(data.data.user));
+          }
+        })
+        .catch(() => {}); // silently ignore — user can re-login if truly expired
     }
     setLoading(false);
   }, []);
@@ -56,7 +71,18 @@ export function CompanyAuthProvider({ children }) {
       },
     });
     const data = await res.json();
-    if (!data.success) throw new Error(data.message || 'Request failed');
+    if (!data.success) {
+      if (res.status === 401 && !_handlingAuthError) {
+        _handlingAuthError = true;
+        localStorage.removeItem('company_token');
+        localStorage.removeItem('company_user');
+        localStorage.removeItem('ck_token');
+        localStorage.removeItem('ck_user');
+        setCompanyUser(null);
+        window.location.href = '/company';
+      }
+      throw new Error(data.message || 'Request failed');
+    }
     return data.data;
   }, []);
 

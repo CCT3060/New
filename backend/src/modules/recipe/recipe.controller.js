@@ -42,8 +42,12 @@ const listRecipes = async (req, res, next) => {
     const { page, limit, skip } = getPaginationParams(req.query);
     const orderBy = getSortParams(req.query, ['recipeName', 'recipeCode', 'createdAt', 'updatedAt', 'standardPax']);
 
+    // Scope to companyId if the authenticated user has one
+    const companyId = req.user?.companyId || null;
+
     const { recipes, total } = await recipeService.listRecipes({
       ...req.query,
+      companyId: companyId || undefined,
       skip,
       take: limit,
       orderBy,

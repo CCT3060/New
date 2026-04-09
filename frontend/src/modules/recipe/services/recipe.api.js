@@ -29,8 +29,10 @@ api.interceptors.response.use(
     if (err.response?.status === 401) {
       localStorage.removeItem('ck_token');
       localStorage.removeItem('ck_user');
-      // Only redirect to login when NOT embedded in the company portal iframe
-      if (window.self === window.top) {
+      // If embedded in company portal iframe, redirect the top frame
+      if (window.self !== window.top) {
+        window.top.location.href = '/company';
+      } else {
         window.location.href = '/login';
       }
     }

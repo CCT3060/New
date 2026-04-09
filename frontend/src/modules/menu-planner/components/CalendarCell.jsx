@@ -13,7 +13,7 @@ const MEAL_COLORS = {
   DESSERT: { bg: '#fdf2f8', border: '#fbcfe8', dot: '#db2777' },
 };
 
-export default function CalendarCell({ date, mealType, planId, items, plan, canManage, onRemoveItem, isToday, weekLoading, mealColor }) {
+export default function CalendarCell({ date, mealType, planId, items, plan, canManage, onRemoveItem, onClickAdd, isToday, weekLoading, mealColor }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `cell-${date}-${mealType}`,
     data: { date, mealType },
@@ -79,6 +79,23 @@ export default function CalendarCell({ date, mealType, planId, items, plan, canM
           />
         ))}
       </div>
+
+      {/* Add recipe button */}
+      {canManage && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onClickAdd?.(date, mealType); }}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: '100%', padding: '3px 0', marginTop: 2,
+            border: '1px dashed #cbd5e1', borderRadius: 5, background: 'none',
+            color: '#94a3b8', fontSize: '0.72rem', cursor: 'pointer',
+            transition: 'all 120ms',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = colors.dot; e.currentTarget.style.color = colors.dot; e.currentTarget.style.background = colors.bg; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.background = 'none'; }}
+          title="Add recipe to this slot"
+        >+</button>
+      )}
     </td>
   );
 }

@@ -4,6 +4,7 @@ import { useCompanyAuth } from '../../contexts/CompanyAuthContext';
 import { toast } from 'react-toastify';
 import PaxCountTab from './PaxCountTab';
 import RequisitionTab from './RequisitionTab';
+import IngredientsTab from './IngredientsTab';
 
 const cardStyle = {
   background: '#fff', borderRadius: 14, padding: '20px 24px',
@@ -88,15 +89,17 @@ export default function CompanyDashboardPage() {
 
   const [saving, setSaving] = useState(false);
 
+  const isAuthError = (e) => e?.message?.toLowerCase().includes('token') || e?.message?.toLowerCase().includes('unauthorized');
+
   const load = () => {
     setKitchenLoading(true);
-    companyFetch('/kitchens').then(d => setKitchens(d.kitchens || [])).catch(e => toast.error(e.message)).finally(() => setKitchenLoading(false));
+    companyFetch('/kitchens').then(d => setKitchens(d.kitchens || [])).catch(e => { if (!isAuthError(e)) toast.error(e.message); }).finally(() => setKitchenLoading(false));
     setStoreLoading(true);
-    companyFetch('/stores').then(d => setStores(d.stores || [])).catch(e => toast.error(e.message)).finally(() => setStoreLoading(false));
+    companyFetch('/stores').then(d => setStores(d.stores || [])).catch(e => { if (!isAuthError(e)) toast.error(e.message); }).finally(() => setStoreLoading(false));
     setUnitLoading(true);
-    companyFetch('/units').then(d => setUnits(d.units || [])).catch(e => toast.error(e.message)).finally(() => setUnitLoading(false));
+    companyFetch('/units').then(d => setUnits(d.units || [])).catch(e => { if (!isAuthError(e)) toast.error(e.message); }).finally(() => setUnitLoading(false));
     setUserLoading(true);
-    companyFetch('/kitchen-users').then(d => setKitchenUsers(d.users || [])).catch(e => toast.error(e.message)).finally(() => setUserLoading(false));
+    companyFetch('/kitchen-users').then(d => setKitchenUsers(d.users || [])).catch(e => { if (!isAuthError(e)) toast.error(e.message); }).finally(() => setUserLoading(false));
   };
 
   useEffect(() => { load(); }, []);
@@ -211,6 +214,7 @@ export default function CompanyDashboardPage() {
   ];
 
   const NAV_APP = [
+    { key: 'ingredients', icon: '🧂', label: 'Ingredients' },
     { key: 'recipes', icon: '📋', label: 'Recipes' },
     { key: 'report', icon: '📊', label: 'Recipe Report' },
     { key: 'menu-planner', icon: '📅', label: 'Menu Planner' },
@@ -226,6 +230,7 @@ export default function CompanyDashboardPage() {
 
   const TAB_LABELS = {
     kitchens: '🍳 Kitchens', stores: '🏪 Stores', units: '🏢 Delivery Units', users: '👥 Kitchen Users',
+    ingredients: '🧂 Ingredients',
     recipes: '📋 Recipes', report: '📊 Recipe Report', 'menu-planner': '📅 Menu Planner', pax: '⚖ Pax Count',
     requisition: '📦 Requisition',
   };
@@ -327,6 +332,11 @@ export default function CompanyDashboardPage() {
             title={TAB_LABELS[tab]}
           />
         )}
+        {tab === 'ingredients' && (
+          <div style={{ padding: '28px 32px', flex: 1 }}>
+            <IngredientsTab />
+          </div>
+        )}
         {tab === 'pax' && (
           <div style={{ padding: '28px 32px', flex: 1 }}>
             <PaxCountTab />
@@ -337,7 +347,7 @@ export default function CompanyDashboardPage() {
             <RequisitionTab />
           </div>
         )}
-        <div style={{ padding: '28px 32px', flex: 1, display: APP_TAB_SRC[tab] || tab === 'pax' || tab === 'requisition' ? 'none' : 'block' }}>
+        <div style={{ padding: '28px 32px', flex: 1, display: APP_TAB_SRC[tab] || tab === 'ingredients' || tab === 'pax' || tab === 'requisition' ? 'none' : 'block' }}>
         {/* ── KITCHENS ── */}
         {tab === 'kitchens' && (
           <div style={cardStyle}>

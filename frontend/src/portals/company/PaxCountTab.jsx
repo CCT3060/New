@@ -19,10 +19,33 @@ function isoWeekDates() {
   const diffToMon = (day === 0 ? -6 : 1 - day);
   const mon = new Date(now); mon.setDate(now.getDate() + diffToMon);
   const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
-  return [mon.toISOString().split('T')[0], sun.toISOString().split('T')[0]];
+  return [localDateStr(mon), localDateStr(sun)];
+}
+
+// Returns YYYY-MM-DD using LOCAL date (not UTC) to avoid timezone off-by-one
+function localDateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function todayStr() {
+  return localDateStr(new Date());
+}
+
+function addDays(dateStr, n) {
+  const d = new Date(dateStr + 'T12:00:00'); // noon to avoid DST issues
+  d.setDate(d.getDate() + n);
+  return localDateStr(d);
+}
+
+function monthRange() {
+  const now = new Date();
+  const first = new Date(now.getFullYear(), now.getMonth(), 1);
+  const last  = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  return [localDateStr(first), localDateStr(last)];
 }
 
 function fmtDate(dateStr) {
+  // Use T12:00:00 (local noon) to avoid midnight UTC → prev-day local conversion
   const d = new Date(dateStr + 'T12:00:00');
   return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase();
 }
@@ -135,10 +158,9 @@ function PaxCell({ entry, pendingValue, unitId, recipeId, date, mealType, onStag
 // ─── Main PaxCountTab ─────────────────────────────────────────────────────────
 export default function PaxCountTab() {
   const { companyFetch } = useCompanyAuth();
-  const [defaultFrom, defaultTo] = isoWeekDates();
 
-  const [from, setFrom] = useState(defaultFrom);
-  const [to,   setTo]   = useState(defaultTo);
+  const [from, setFrom] = useState(todayStr);
+  const [to,   setTo]   = useState(todayStr);
 
   const [data,    setData]    = useState(null);  // { units, rows }
   const [loading, setLoading] = useState(false);
@@ -173,7 +195,7 @@ export default function PaxCountTab() {
       );
       setPendingEntries({});
       await loadMatrix();
-      // Auto-generate requisition and show chart
+      // Auto-generate requisition and show
       setReqLoading(true); setReqError(''); setReqResult(null);
       try {
         const d = await companyFetch(`/pax/requisition?from=${from}&to=${to}`);
@@ -185,8 +207,8 @@ export default function PaxCountTab() {
       }
       setChartVisible(true);
       setTimeout(() => {
-        document.getElementById('pax-chart-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 150);
+        document.getElementById('pax-requisition-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
     } catch (e) {
       alert('Submit failed: ' + (e.message || 'Unknown error'));
     } finally {
@@ -335,6 +357,25 @@ export default function PaxCountTab() {
 
   const units = data?.units || [];
 
+  // ─── Effective pax for a cell (pending overrides saved) ──────────────────
+  const effectivePax = (date, recipeId, mealType, unitId) => {
+    const pk = `${date}-${recipeId}-${mealType}-${unitId}`;
+    const pending = pendingEntries[pk];
+    if (pending != null) return pending.paxCount;
+    // find in data
+    for (const row of (data?.rows || [])) {
+      if (row.date !== date) continue;
+      for (const mg of row.mealGroups) {
+        if (mg.mealType !== mealType) continue;
+        for (const rec of mg.recipes) {
+          if (rec.recipeId !== recipeId) continue;
+          return rec.entries[unitId]?.paxCount || 0;
+        }
+      }
+    }
+    return 0;
+  };
+
   // ─── Chart data ─────────────────────────────────────────────────────────────
   const UNIT_PALETTE = ['#6366f1','#10b981','#f59e0b','#ef4444','#06b6d4','#8b5cf6','#f97316','#ec4899'];
   const chartData = useMemo(() => {
@@ -375,6 +416,18 @@ export default function PaxCountTab() {
           <p style={{ margin: 0, color: '#64748b', fontSize: '0.82rem' }}>Unit-wise headcount for menu plan items</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          {/* Preset buttons */}
+          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+            {[['Today', () => { const t = todayStr(); setFrom(t); setTo(t); }],
+              ['This Week', () => { const [f,t] = isoWeekDates(); setFrom(f); setTo(t); }],
+              ['This Month', () => { const [f,t] = monthRange(); setFrom(f); setTo(t); }],
+              ['Last 7 Days', () => { const t = todayStr(); setFrom(addDays(t,-6)); setTo(t); }],
+            ].map(([label, fn]) => (
+              <button key={label} onClick={fn}
+                style={{ padding: '5px 11px', border: '1.5px solid #e2e8f0', borderRadius: 7, background: '#f8fafc', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600, color: '#475569', whiteSpace: 'nowrap' }}
+              >{label}</button>
+            ))}
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b' }}>From</label>
             <input type="date" value={from} onChange={e => setFrom(e.target.value)}
@@ -508,9 +561,15 @@ export default function PaxCountTab() {
                                       />
                                     );
                                   })}
-                                  <td style={{ ...tdBase, textAlign: 'center', fontWeight: 800, color: total > 0 ? '#065f46' : '#94a3b8', background: total > 0 ? '#f0fdf4' : 'transparent', fontSize: '0.88rem' }}>
-                                    {total > 0 ? total : '—'}
-                                  </td>
+                                  {/* Total PAX — includes pending entries */}
+                                  {(() => {
+                                    const total = units.reduce((s, u) => s + effectivePax(row.date, rec.recipeId, mg.mealType, u.id), 0);
+                                    return (
+                                      <td style={{ ...tdBase, textAlign: 'center', fontWeight: 800, color: total > 0 ? '#065f46' : '#94a3b8', background: total > 0 ? '#f0fdf4' : 'transparent', fontSize: '0.88rem' }}>
+                                        {total > 0 ? total : '—'}
+                                      </td>
+                                    );
+                                  })()}
                                 </tr>
                               );
                             })}
@@ -794,7 +853,97 @@ export default function PaxCountTab() {
                 </div>
               ) : (
                 <>
-                  {/* ── Recipe-wise ingredient cards ── */}
+                  {/* ── TOTAL AGGREGATED INGREDIENT TABLE (shown first) ── */}
+                  {reqResult.items.length > 0 && (
+                    <div style={{ background: '#fff', borderRadius: 12, border: '2px solid #1e293b', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', marginBottom: 24 }}>
+                      <div style={{ padding: '14px 18px', background: '#1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <span style={{ fontWeight: 800, color: '#fff', fontSize: '0.9rem' }}>📋 Total Ingredient Purchase List</span>
+                          <span style={{ marginLeft: 10, color: '#94a3b8', fontSize: '0.75rem' }}>
+                            Combined from all recipes for {fmtDate(from)}{from !== to ? ` – ${fmtDate(to)}` : ''}
+                          </span>
+                        </div>
+                        <span style={{ background: 'rgba(255,255,255,0.15)', color: '#e2e8f0', padding: '2px 10px', borderRadius: 12, fontSize: '0.7rem', fontWeight: 700 }}>
+                          {reqResult.items.length} unique items
+                        </span>
+                      </div>
+                      <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                          <thead>
+                            <tr>
+                              {['#', 'Item Code', 'Ingredient Name', 'Gross Qty', 'Net Qty', 'Unit', 'Rate', 'Value (₹)'].map(h => (
+                                <th key={h} style={{
+                                  padding: '10px 14px', background: '#f8fafc', color: '#374151',
+                                  fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase',
+                                  letterSpacing: '0.06em', borderBottom: '2px solid #e2e8f0',
+                                  textAlign: ['Gross Qty', 'Net Qty', 'Rate', 'Value (₹)'].includes(h) ? 'right' : h === '#' ? 'center' : 'left',
+                                }}>{h}</th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {reqResult.items.map((item, idx) => {
+                              const unitCost = item.unitCost || 0;
+                              const netQty = parseFloat(item.totalNetQty || 0);
+                              const value = netQty * unitCost;
+                              return (
+                                <tr key={item.inventoryItemId || idx}
+                                  style={{ borderBottom: '1px solid #f1f5f9' }}
+                                  onMouseEnter={e => e.currentTarget.style.background = '#fafbff'}
+                                  onMouseLeave={e => e.currentTarget.style.background = ''}
+                                >
+                                  <td style={{ padding: '8px 14px', textAlign: 'center', color: '#94a3b8', fontSize: '0.72rem', fontWeight: 600 }}>{idx + 1}</td>
+                                  <td style={{ padding: '8px 14px' }}>
+                                    {item.itemCode
+                                      ? <span style={{ background: '#fffbeb', color: '#d97706', padding: '2px 7px', borderRadius: 4, fontSize: '0.7rem', fontWeight: 700, fontFamily: 'monospace' }}>{item.itemCode}</span>
+                                      : <span style={{ color: '#cbd5e1' }}>—</span>}
+                                  </td>
+                                  <td style={{ padding: '8px 14px', fontWeight: 700, color: '#0f172a', fontSize: '0.86rem' }}>{item.itemName}</td>
+                                  <td style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>
+                                    {parseFloat(item.totalGrossQty || 0).toLocaleString('en-IN', { maximumFractionDigits: 3 })}
+                                  </td>
+                                  <td style={{ padding: '8px 14px', textAlign: 'right', color: '#475569', fontSize: '0.84rem', fontWeight: 600 }}>
+                                    {netQty.toLocaleString('en-IN', { maximumFractionDigits: 3 })}
+                                  </td>
+                                  <td style={{ padding: '8px 14px' }}>
+                                    <span style={{ background: '#f0fdf4', color: '#059669', padding: '2px 8px', borderRadius: 5, fontSize: '0.72rem', fontWeight: 700 }}>
+                                      {item.unit || '—'}
+                                    </span>
+                                  </td>
+                                  <td style={{ padding: '8px 14px', textAlign: 'right', color: '#64748b', fontSize: '0.78rem' }}>
+                                    {unitCost > 0 ? `₹${unitCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : '—'}
+                                  </td>
+                                  <td style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 700, color: value > 0 ? '#065f46' : '#94a3b8', fontSize: '0.82rem' }}>
+                                    {value > 0 ? `₹${value.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : '—'}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                          <tfoot>
+                            <tr style={{ background: '#f0fdf4', borderTop: '2px solid #e2e8f0' }}>
+                              <td colSpan={3} style={{ padding: '10px 14px', fontWeight: 700, fontSize: '0.82rem', color: '#1e293b' }}>Grand Total</td>
+                              <td style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 800, fontSize: '0.85rem', color: '#0f172a' }}>
+                                {reqResult.items.reduce((s, i) => s + parseFloat(i.totalGrossQty || 0), 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                              </td>
+                              <td style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 700, fontSize: '0.82rem', color: '#475569' }}>
+                                {reqResult.items.reduce((s, i) => s + parseFloat(i.totalNetQty || 0), 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                              </td>
+                              <td></td><td></td>
+                              <td style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 800, fontSize: '0.88rem', color: '#065f46' }}>
+                                ₹{reqResult.items.reduce((s, i) => s + parseFloat(i.totalNetQty || 0) * (i.unitCost || 0), 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                              </td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── Per-recipe breakdown (collapsible cards) ── */}
+                  <div style={{ marginBottom: 8 }}>
+                    <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#64748b', margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Per-Recipe Breakdown</p>
+                  </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
                     {reqResult.recipeBreakdown.map((recipe, ri) => (
                       <div key={ri} style={{ background: '#fff', borderRadius: 12, border: '1.5px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
@@ -905,64 +1054,6 @@ export default function PaxCountTab() {
                       </div>
                     ))}
                   </div>
-
-                  {/* ── Consolidated totals table ── */}
-                  {reqResult.items.length > 0 && (
-                    <div style={{ background: '#fff', borderRadius: 12, border: '1.5px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.07)' }}>
-                      <div style={{ padding: '12px 18px', background: '#1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontWeight: 700, color: '#fff', fontSize: '0.82rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-                          Grand Total — All Ingredients
-                        </span>
-                        <span style={{ background: 'rgba(255,255,255,0.15)', color: '#e2e8f0', padding: '2px 10px', borderRadius: 12, fontSize: '0.7rem', fontWeight: 700 }}>
-                          {reqResult.items.length} unique items
-                        </span>
-                      </div>
-                      <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                          <thead>
-                            <tr>
-                              {['#', 'Item Code', 'Ingredient Name', 'Total Gross Qty', 'Total Net Qty', 'Unit'].map(h => (
-                                <th key={h} style={{
-                                  padding: '8px 14px', background: '#f8fafc', color: '#374151',
-                                  fontWeight: 700, fontSize: '0.7rem', textTransform: 'uppercase',
-                                  letterSpacing: '0.06em', borderBottom: '2px solid #e2e8f0',
-                                  textAlign: ['Total Gross Qty', 'Total Net Qty'].includes(h) ? 'right' : h === '#' ? 'center' : 'left',
-                                }}>{h}</th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {reqResult.items.map((item, idx) => (
-                              <tr key={item.inventoryItemId || idx}
-                                style={{ borderBottom: '1px solid #f1f5f9' }}
-                                onMouseEnter={e => e.currentTarget.style.background = '#fafbff'}
-                                onMouseLeave={e => e.currentTarget.style.background = ''}
-                              >
-                                <td style={{ padding: '7px 14px', textAlign: 'center', color: '#94a3b8', fontSize: '0.72rem', fontWeight: 600 }}>{idx + 1}</td>
-                                <td style={{ padding: '7px 14px' }}>
-                                  {item.itemCode
-                                    ? <span style={{ background: '#fffbeb', color: '#d97706', padding: '2px 7px', borderRadius: 4, fontSize: '0.7rem', fontWeight: 700, fontFamily: 'monospace' }}>{item.itemCode}</span>
-                                    : <span style={{ color: '#cbd5e1' }}>—</span>}
-                                </td>
-                                <td style={{ padding: '7px 14px', fontWeight: 600, color: '#0f172a', fontSize: '0.84rem' }}>{item.itemName}</td>
-                                <td style={{ padding: '7px 14px', textAlign: 'right', fontWeight: 800, color: '#0f172a', fontSize: '0.86rem' }}>
-                                  {item.totalGrossQty.toLocaleString('en-IN', { maximumFractionDigits: 3 })}
-                                </td>
-                                <td style={{ padding: '7px 14px', textAlign: 'right', color: '#475569', fontSize: '0.82rem' }}>
-                                  {item.totalNetQty.toLocaleString('en-IN', { maximumFractionDigits: 3 })}
-                                </td>
-                                <td style={{ padding: '7px 14px' }}>
-                                  <span style={{ background: '#f1f5f9', color: '#475569', padding: '2px 8px', borderRadius: 5, fontSize: '0.72rem', fontWeight: 700 }}>
-                                    {item.unit || '—'}
-                                  </span>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )}
                 </>
               )}
             </>

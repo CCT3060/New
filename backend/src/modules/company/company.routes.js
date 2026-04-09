@@ -3,10 +3,19 @@ const router = express.Router();
 const ctrl = require('./company.controller');
 const { verifyCompanyToken } = require('./company.service');
 const recipeService = require('../recipe/recipe.service');
+const inventoryService = require('../inventory/inventory.service');
 const { AppError } = require('../../middleware/error.middleware');
-const { success } = require('../../utils/response');
+const { success, created } = require('../../utils/response');
 const db = require('../../db/mysql');
 const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcryptjs');
+
+// Convert a Date (or string) to local YYYY-MM-DD, avoiding UTC off-by-one
+function toLocalDate(v) {
+  if (!v) return '';
+  if (typeof v === 'string') return v.split('T')[0];
+  return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2, '0')}-${String(v.getDate()).padStart(2, '0')}`;
+}
 
 // Middleware: verify company JWT
 const companyAuth = (req, res, next) => {
@@ -22,7 +31,159 @@ const companyAuth = (req, res, next) => {
 
 router.post('/login', ctrl.login);
 
-// ─── Pax Scale ────────────────────────────────────────────────────────────────
+// GET /api/company/refresh-ck-token — returns a fresh innerToken (ck_token) for kitchen API access
+router.get('/refresh-ck-token', companyAuth, async (req, res, next) => {
+  try {
+    const { userId } = req.companyUser;
+    const [[user]] = await db.query(
+      'SELECT id, name, email, role, isActive FROM users WHERE id = ?', [userId]
+    );
+    if (!user || !user.isActive) return next(new AppError('User not found', 404));
+    const jwt = require('jsonwebtoken');
+    const innerToken = jwt.sign(
+      { userId: user.id, role: user.role, companyId: req.companyUser.companyId },
+      process.env.JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+    return success(res, { innerToken, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+  } catch (err) { next(err); }
+});
+
+// ─── Company Warehouses (kitchen-linked) ─────────────────────────────────────
+// GET /api/company/warehouses — returns warehouses that are linked to this company's kitchens
+// Also runs a one-time migration for existing kitchens that don't have a warehouse yet
+router.get('/warehouses', companyAuth, async (req, res, next) => {
+  try {
+    const { companyId } = req.companyUser;
+    // Ensure every company kitchen has a corresponding warehouse (idempotent migration)
+    const [kitchens] = await db.query(
+      'SELECT id, name, address FROM kitchens WHERE companyId = ? AND isActive = 1', [companyId]
+    );
+    for (const k of kitchens) {
+      const [[existing]] = await db.query('SELECT id FROM warehouses WHERE id = ?', [k.id]);
+      if (!existing) {
+        const baseCode = k.name.toUpperCase().replace(/[^A-Z0-9]/g, '_').slice(0, 20);
+        const code = `${baseCode}_${k.id.slice(0, 6).toUpperCase()}`;
+        await db.query(
+          'INSERT IGNORE INTO warehouses (id, name, code, address, isActive, createdAt, updatedAt) VALUES (?, ?, ?, ?, 1, NOW(), NOW())',
+          [k.id, k.name, code, k.address || null]
+        );
+      }
+    }
+    // Return all warehouses matching company kitchen IDs
+    const kitchenIds = kitchens.map(k => k.id);
+    if (kitchenIds.length === 0) {
+      return success(res, { warehouses: [] });
+    }
+    const placeholders = kitchenIds.map(() => '?').join(',');
+    const [warehouses] = await db.query(
+      `SELECT id, name, code, address FROM warehouses WHERE id IN (${placeholders}) AND isActive = 1`,
+      kitchenIds
+    );
+    return success(res, { warehouses });
+  } catch (err) { next(err); }
+});
+
+// ─── Ingredients (Inventory Items) ───────────────────────────────────────────
+// Company users manage their own store's ingredient master list.
+
+// GET /api/company/ingredients  — list all inventory items for this company
+router.get('/ingredients', companyAuth, async (req, res, next) => {
+  try {
+    const { search, category, isActive } = req.query;
+    const companyId = req.companyUser?.companyId;
+    // Get storeIds for this company first
+    const stores = await inventoryService.getStoresByCompany(companyId);
+    const storeIds = stores.map(s => s.id);
+    const { items, total } = await inventoryService.getItems({ search, category, isActive, limit: 500 });
+    // Filter to only items belonging to this company's stores (or unassigned items)
+    const filtered = storeIds.length > 0
+      ? items.filter(i => !i.storeId || storeIds.includes(i.storeId))
+      : items;
+    return success(res, { items: filtered, total: filtered.length });
+  } catch (err) { next(err); }
+});
+
+// GET /api/company/ingredients/stores — list this company's stores for the dropdown
+router.get('/ingredients/stores', companyAuth, async (req, res, next) => {
+  try {
+    const companyId = req.companyUser?.companyId;
+    const stores = await inventoryService.getStoresByCompany(companyId);
+    return success(res, { stores });
+  } catch (err) { next(err); }
+});
+
+// GET /api/company/ingredients/warehouses — kept for backward compat (returns warehouses)
+router.get('/ingredients/warehouses', companyAuth, async (req, res, next) => {
+  try {
+    const warehouses = await inventoryService.getWarehouses();
+    return success(res, { warehouses });
+  } catch (err) { next(err); }
+});
+
+// GET /api/company/ingredients/categories — distinct categories
+router.get('/ingredients/categories', companyAuth, async (req, res, next) => {
+  try {
+    const [rows] = await db.query(
+      'SELECT DISTINCT category FROM inventory_items WHERE category IS NOT NULL ORDER BY category ASC'
+    );
+    return success(res, { categories: rows.map(r => r.category) });
+  } catch (err) { next(err); }
+});
+
+// POST /api/company/ingredients — add new ingredient
+router.post('/ingredients', companyAuth, async (req, res, next) => {
+  try {
+    const { itemCode, itemName, category, unit, costPerUnit, storeId, currentStock, minimumStock } = req.body;
+    if (!itemCode || !itemName || !unit || !storeId) {
+      return next(new AppError('itemCode, itemName, unit, and storeId are required', 400));
+    }
+    const item = await inventoryService.createItem({
+      itemCode, itemName, category: category || 'General',
+      unit, costPerUnit: costPerUnit ?? 0,
+      currentStock: currentStock ?? 0,
+      minimumStock: minimumStock ?? 0,
+      storeId, isActive: true,
+    });
+    return created(res, { item }, 'Ingredient added');
+  } catch (err) { next(err); }
+});
+
+// PUT /api/company/ingredients/:id — update ingredient
+router.put('/ingredients/:id', companyAuth, async (req, res, next) => {
+  try {
+    const item = await inventoryService.updateItem(req.params.id, req.body);
+    return success(res, { item }, 'Ingredient updated');
+  } catch (err) { next(err); }
+});
+
+// GET /api/company/ingredients/recipe-scale/:recipeId — scale a single recipe by pax + optional yieldQty
+// Returns ingredient list with quantities scaled to targetPax and optionally overriding yieldQty
+router.get('/ingredients/recipe-scale/:recipeId', companyAuth, async (req, res, next) => {
+  try {
+    const targetPax = parseInt(req.query.pax, 10) || 100;
+    const targetYield = req.query.yieldQty ? parseFloat(req.query.yieldQty) : null;
+    if (targetPax <= 0) return next(new AppError('pax must be a positive integer', 400));
+
+    const result = await recipeService.scaleRecipe(req.params.recipeId, targetPax);
+
+    // If yieldQty override is provided, scale ingredients proportionally
+    if (targetYield !== null && result.standardYieldQty && result.standardYieldQty > 0) {
+      const yieldFactor = targetYield / parseFloat(result.standardYieldQty);
+      result.scaledIngredients = result.scaledIngredients.map(ing => ({
+        ...ing,
+        grossQty: parseFloat((ing.grossQty * yieldFactor).toFixed(4)),
+        netQty: parseFloat((ing.netQty * yieldFactor).toFixed(4)),
+      }));
+      result.yieldScaleFactor = parseFloat(yieldFactor.toFixed(4));
+      result.targetYieldQty = targetYield;
+    }
+
+    return success(res, result);
+  } catch (err) { next(err); }
+});
+
+
 router.get('/pax/recipes', companyAuth, async (req, res, next) => {
   try {
     const { recipes } = await recipeService.lookupRecipes({ limit: 200, page: 1 });
@@ -79,7 +240,7 @@ router.get('/pax/matrix', companyAuth, async (req, res, next) => {
     // Build lookup: "date|recipeId|mealType" → { unitId: entryObj }
     const lookup = {};
     for (const e of entries) {
-      const d = e.date instanceof Date ? e.date.toISOString().split('T')[0] : String(e.date).split('T')[0];
+      const d = toLocalDate(e.date);
       const key = `${d}|${e.recipeId}|${e.mealType}`;
       if (!lookup[key]) lookup[key] = {};
       lookup[key][e.unitId] = { id: e.id, paxCount: Number(e.paxCount), uom: e.uom };
@@ -88,7 +249,7 @@ router.get('/pax/matrix', companyAuth, async (req, res, next) => {
     // 4. Group into matrix rows: date → mealType → recipes
     const dateMap = {};
     for (const pr of planRecipes) {
-      const dateStr = pr.planDate instanceof Date ? pr.planDate.toISOString().split('T')[0] : String(pr.planDate).split('T')[0];
+      const dateStr = toLocalDate(pr.planDate);
       const mealType = pr.planMealType || pr.recipeMealType || 'LUNCH';
       if (!dateMap[dateStr]) dateMap[dateStr] = {};
       if (!dateMap[dateStr][mealType]) dateMap[dateStr][mealType] = [];
@@ -108,7 +269,7 @@ router.get('/pax/matrix', companyAuth, async (req, res, next) => {
 
     // 5. Also include pax entries that exist but may not have a menu plan (manual entries)
     for (const e of entries) {
-      const d = e.date instanceof Date ? e.date.toISOString().split('T')[0] : String(e.date).split('T')[0];
+      const d = toLocalDate(e.date);
       const mealType = e.mealType;
       if (!dateMap[d]) dateMap[d] = {};
       if (!dateMap[d][mealType]) dateMap[d][mealType] = [];
@@ -133,7 +294,7 @@ router.get('/pax/matrix', companyAuth, async (req, res, next) => {
     const dayNames = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
     const rows = Object.keys(dateMap).sort().map(dateStr => ({
       date: dateStr,
-      dayLabel: dayNames[new Date(dateStr).getDay()],
+      dayLabel: dayNames[new Date(dateStr + 'T12:00:00').getDay()],
       mealGroups: Object.keys(dateMap[dateStr])
         .sort()
         .map(mt => ({ mealType: mt, recipes: dateMap[dateStr][mt] })),
@@ -152,10 +313,10 @@ router.put('/pax/entry', companyAuth, async (req, res, next) => {
       return next(new AppError('date, recipeId, unitId, paxCount are required', 400));
     }
 
-    // Check if entry already exists
+    // Check if entry already exists (must match mealType too — same recipe can appear in multiple meals)
     const [[existing]] = await db.query(
-      'SELECT id FROM pax_entries WHERE companyId = ? AND date = ? AND recipeId = ? AND unitId = ?',
-      [companyId, date, recipeId, unitId]
+      'SELECT id FROM pax_entries WHERE companyId = ? AND date = ? AND recipeId = ? AND mealType = ? AND unitId = ?',
+      [companyId, date, recipeId, mealType, unitId]
     );
 
     if (existing) {
@@ -167,7 +328,7 @@ router.put('/pax/entry', companyAuth, async (req, res, next) => {
     } else {
       const id = uuidv4();
       await db.query(
-        'INSERT INTO pax_entries (id, companyId, date, recipeId, mealType, unitId, paxCount, uom) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO pax_entries (id, companyId, date, recipeId, mealType, unitId, paxCount, uom, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
         [id, companyId, date, recipeId, mealType || 'LUNCH', unitId, paxCount, uom || 'pax']
       );
       return success(res, { id, created: true });
@@ -237,9 +398,7 @@ router.get('/pax/requisition', companyAuth, async (req, res, next) => {
     const recipeBreakdown = [];
 
     for (const entry of entries) {
-      const d = entry.date instanceof Date
-        ? entry.date.toISOString().split('T')[0]
-        : String(entry.date).split('T')[0];
+      const d = toLocalDate(entry.date);
       try {
         const scaled = await recipeService.scaleRecipe(entry.recipeId, Number(entry.paxCount));
         recipeBreakdown.push({
@@ -270,12 +429,15 @@ router.get('/pax/requisition', companyAuth, async (req, res, next) => {
               itemCode: ing.itemCode || '',
               itemName: ing.itemName || 'Unknown',
               unit: ing.grossUnit || '',
+              unitCost: ing.unitCost || 0,
               totalGrossQty: 0,
               totalNetQty: 0,
+              totalValue: 0,
             };
           }
           ingredientMap[key].totalGrossQty += ing.grossQty;
           ingredientMap[key].totalNetQty += ing.netQty;
+          ingredientMap[key].totalValue += ing.lineCost || 0;
         }
       } catch {
         // skip recipes with no ingredients configured
@@ -287,6 +449,7 @@ router.get('/pax/requisition', companyAuth, async (req, res, next) => {
         ...i,
         totalGrossQty: parseFloat(i.totalGrossQty.toFixed(3)),
         totalNetQty: parseFloat(i.totalNetQty.toFixed(3)),
+        totalValue: parseFloat(i.totalValue.toFixed(2)),
       }))
       .sort((a, b) => a.itemName.localeCompare(b.itemName));
 

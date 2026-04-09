@@ -28,7 +28,7 @@ function ProtectedRoute({ children }) {
   const isEmbed = window.self !== window.top;
   if (isEmbed) return children;
   if (loading) return <div className="loading-center"><div className="spinner" /></div>;
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/root" replace />;
   return children;
 }
 
@@ -85,7 +85,7 @@ export default function App() {
           <Route path="menu-planner/:id" element={<MenuPlanDetailPage />} />
           <Route path="menu-planner/:id/edit" element={<MenuPlanEditPage />} />
         </Route>
-        <Route path="*" element={<Navigate to="/recipes" replace />} />
+        <Route path="*" element={<Navigate to="/root" replace />} />
       </Routes>
     </BrowserRouter>
   );

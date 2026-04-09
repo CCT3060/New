@@ -64,7 +64,7 @@ const getRecipeExtras = async (id) => {
 
 //  findAll 
 const findAll = async ({
-  search, status, mealType, category, foodType, warehouseId,
+  search, status, mealType, category, foodType, warehouseId, companyId,
   isCurrentVersion = true, skip = 0, take = 20,
 }) => {
   const conds = ['r.deletedAt IS NULL'];
@@ -75,6 +75,11 @@ const findAll = async ({
   if (category) { conds.push('r.category LIKE ?'); params.push(`%${category}%`); }
   if (foodType) { conds.push('r.foodType = ?'); params.push(foodType); }
   if (warehouseId) { conds.push('r.warehouseId = ?'); params.push(warehouseId); }
+  if (companyId) {
+    // Filter recipes created by users belonging to this company
+    conds.push('r.createdBy IN (SELECT id FROM users WHERE companyId = ?)');
+    params.push(companyId);
+  }
   if (isCurrentVersion !== undefined) { conds.push('r.isCurrentVersion = ?'); params.push(isCurrentVersion ? 1 : 0); }
 
   const where = 'WHERE ' + conds.join(' AND ');
@@ -128,8 +133,8 @@ const create = async (data) => {
        status, versionNumber, isCurrentVersion, baseRecipeId, warehouseId,
        createdBy, approvedBy, approvedAt, approvalNote, createdAt, updatedAt)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-    [id, data.recipeCode, data.recipeName, data.category || null,
-     data.mealType || null, data.foodType || null, data.cuisineType || null, data.description || null,
+    [id, data.recipeCode, data.recipeName, data.category || 'General',
+     data.mealType || 'LUNCH', data.foodType || 'VEG', data.cuisineType || null, data.description || null,
      data.standardPax || 1, data.yieldQty || 1, data.yieldUnit || 'portion', data.portionPerPax || 1,
      data.prepTimeMin || 0, data.cookTimeMin || 0,
      data.status || 'DRAFT', data.versionNumber || 1, data.isCurrentVersion !== false ? 1 : 0,
@@ -181,8 +186,8 @@ const createIngredient = async (data) => {
   await db.query(
     `INSERT INTO recipe_ingredients
        (id, recipeId, inventoryItemId, sequenceNo, grossQty, grossUnit, wastagePercent,
-        netQty, netUnit, unitCostSnapshot, lineCost, notes)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        netQty, netUnit, unitCostSnapshot, lineCost, notes, createdAt, updatedAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
     [id, data.recipeId, data.inventoryItemId, data.sequenceNo || 0,
      data.grossQty, data.grossUnit, data.wastagePercent || 0,
      data.netQty, data.netUnit, data.unitCostSnapshot, data.lineCost, data.notes || null]
@@ -226,8 +231,8 @@ const createStep = async (data) => {
   await db.query(
     `INSERT INTO recipe_steps
        (id, recipeId, stepNo, stepType, instruction, estimatedTimeMin,
-        equipmentName, temperatureNote, qcCheckNote)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        equipmentName, temperatureNote, qcCheckNote, createdAt, updatedAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
     [id, data.recipeId, data.stepNo, data.stepType || 'PREP',
      data.instruction, data.estimatedTimeMin || 0,
      data.equipmentName || null, data.temperatureNote || null, data.qcCheckNote || null]

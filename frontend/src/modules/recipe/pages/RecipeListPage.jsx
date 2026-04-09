@@ -213,10 +213,10 @@ export default function RecipeListPage() {
                         Edit
                       </button>
                     )}
-                    {isAdmin && recipe.status === 'DRAFT' && (
+                    {isAdmin && recipe.status !== 'ARCHIVED' && (
                       <button onClick={(e) => { e.stopPropagation(); setDeleteConfirm(recipe); }}
                         style={{ padding: '4px 8px', borderRadius: 6, border: '1.5px solid #fee2e2', background: '#fef2f2', fontSize: '0.75rem', cursor: 'pointer', color: '#dc2626' }}>
-                        Ÿ—‘
+                        🗑
                       </button>
                     )}
                   </div>

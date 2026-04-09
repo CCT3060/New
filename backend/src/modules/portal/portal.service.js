@@ -40,7 +40,7 @@ const createCompany = async (clientId, { name, code }) => {
   const id = uuidv4();
   const compCode = code || name.toUpperCase().replace(/\s+/g, '_').slice(0, 20);
   await db.query(
-    'INSERT INTO companies (id, name, code, clientId, isActive) VALUES (?, ?, ?, ?, 1)',
+    'INSERT INTO companies (id, name, code, clientId, isActive, updatedAt) VALUES (?, ?, ?, ?, 1, NOW())',
     [id, name, compCode, clientId]
   );
   const [[company]] = await db.query(
